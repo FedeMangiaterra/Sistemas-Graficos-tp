@@ -16,7 +16,13 @@
     		</canvas>    		
     	</center>
 
+        <script type="text/javascript" src="js/jquery.js"></script>
+
         <script type="text/javascript" src="js/gl-matrix.js"></script>
+
+        <script type="text/javascript" src="objeto3D.js"></script>
+
+        <script type="text/javascript" src="primitivas.js"></script>
         
         <script id="shader-vs" type="x-shader/x-vertex">
 
@@ -68,8 +74,8 @@
             canvas = null,
 
             glProgram = null,
-            fragmentShader = null,
-            vertexShader = null;
+            fragmentShaderSource = null,
+            vertexShaderSource = null;
                 
             var vertexPositionAttribute = null,
             trianglesVerticeBuffer = null,
@@ -78,12 +84,18 @@
             trianglesIndexBuffer = null;
                
             var modelMatrix = mat4.create();
+            /*mat4.translate(modelMatrix, modelMatrix, [1,1,1]);
+            mat4.scale(modelMatrix, modelMatrix, [0.5,0.5,0.5]);*/
             var viewMatrix = mat4.create();
             var projMatrix = mat4.create();
             var normalMatrix = mat4.create();
             var rotate_angle = -1.57078;
-            
 
+            var vertexShaderFile="shader-vs";
+            var fragmentShaderFile = "shader-fs";
+            
+        //-----------------------------------------------------------------------------------------------------------------------------                                
+//----------------------------------------------------------------------------------------------------------------------------------------------
          
             function initWebGL(){
 
@@ -99,6 +111,9 @@
                 if(gl) {
 
                     setupWebGL();
+                    /*$(document).ready(function(){
+                        loadShaders();
+                    })*/
                     initShaders();
                     setupBuffers();
                     setupVertexShaderMatrix();
@@ -129,8 +144,89 @@
                 mat4.identity(viewMatrix);
                 mat4.translate(viewMatrix,viewMatrix, [0.0, 0.0, -5.0]);
             }
+
+            /*function loadShaders(){
+
+                $.when(loadVS(), loadFS()).done(function(res1,res2){
+                //this code is executed when all ajax calls are done     
+                    webGLStart();
+                });
+
+                function loadVS() {
+                    return  $.ajax({
+                        url: document.getElementById(vertexShaderFile).innerHTML,
+                        success: function(result){
+                            vertexShaderSource=result;
+                        }
+                    });
+                }   
+
+                function loadFS() {
+                    return  $.ajax({
+                        url: document.getElementById(fragmentShaderFile).innerHTML,
+                        success: function(result){
+                            fragmentShaderSource=result;
+                        }
+                    });
+                }
+            }
+
+            function getShader(gl,code,type) {
+
+                var shader;
+
+                if (type == "fragment") 
+                    shader = gl.createShader(gl.FRAGMENT_SHADER);
+                else // "vertex"
+                    shader = gl.createShader(gl.VERTEX_SHADER);
+
+                gl.shaderSource(shader, code);
+                gl.compileShader(shader);
+
+                if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                    console.error(gl.getShaderInfoLog(shader));
+                    console.log("aaaa");
+                    return null;
+                }    
+                return shader;
+            }
                     
-                    
+            function initShaders() {
+    
+                var vertexShader= getShader(gl, vertexShaderSource,"vertex");
+                var fragmentShader= getShader(gl, fragmentShaderSource,"fragment");
+
+                shaderProgram = gl.createProgram();
+                gl.attachShader(shaderProgram, vertexShader);
+                gl.attachShader(shaderProgram, fragmentShader);
+                gl.linkProgram(shaderProgram);
+
+                if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+                    alert("Could not initialise shaders");
+                }
+
+                gl.useProgram(shaderProgram);
+
+                shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aPosition");
+                gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+
+                shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aUv");
+                gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
+
+                shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "aNormal");
+                gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
+
+                shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
+                shaderProgram.mMatrixUniform = gl.getUniformLocation(shaderProgram, "uMMatrix");
+                shaderProgram.vMatrixUniform = gl.getUniformLocation(shaderProgram, "uVMatrix");
+                shaderProgram.nMatrixUniform = gl.getUniformLocation(shaderProgram, "uNMatrix");
+                shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
+                shaderProgram.useLightingUniform = gl.getUniformLocation(shaderProgram, "uUseLighting");
+                shaderProgram.ambientColorUniform = gl.getUniformLocation(shaderProgram, "uAmbientColor");
+                shaderProgram.frameUniform = gl.getUniformLocation(shaderProgram, "time");
+                shaderProgram.lightingDirectionUniform = gl.getUniformLocation(shaderProgram, "uLightPosition");
+                shaderProgram.directionalColorUniform = gl.getUniformLocation(shaderProgram, "uDirectionalColor");
+            }     */   
             function initShaders() {
                 //get shader source
                 var fs_source = document.getElementById('shader-fs').innerHTML,
@@ -286,7 +382,7 @@
             function drawScene(){
                 setupVertexShaderMatrix();
                 
-                vertexPositionAttribute = gl.getAttribLocation(glProgram, "aVertexPosition");
+                /*vertexPositionAttribute = gl.getAttribLocation(glProgram, "aVertexPosition");
                 gl.enableVertexAttribArray(vertexPositionAttribute);
                 gl.bindBuffer(gl.ARRAY_BUFFER, trianglesVerticeBuffer);
                 gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
@@ -297,7 +393,11 @@
                 gl.vertexAttribPointer(vertexNormalAttribute, 3, gl.FLOAT, false, 0, 0);
 
                 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, trianglesIndexBuffer);
-                gl.drawElements( gl.TRIANGLE_STRIP, trianglesIndexBuffer.number_vertex_point, gl.UNSIGNED_SHORT, 0);
+                gl.drawElements( gl.TRIANGLE_STRIP, trianglesIndexBuffer.number_vertex_point, gl.UNSIGNED_SHORT, 0);*/
+
+                sup = new Tubo(1, 5);
+                objeto = new Objeto3D();
+                objeto.dibujarr(sup);
             }
 
  
