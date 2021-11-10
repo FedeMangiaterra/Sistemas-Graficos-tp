@@ -55,25 +55,41 @@ class Objeto3D {
         this.indexBuffer = null;
         this.matrizModelado = mat4.create();
         this.posicion = [0,0,0];
+        this.posicionAnterior = [0,0,0];
         this.rotacion = [1,0,0];
+        this.rotacionAnterior = [1,0,0];
         this.angulo = 0;
+        this.anguloAnterior = 0;
         this.escala = [1,1,1];
+        this.escalaAnterior = [1,1,1];
         this.hijos = [];
     }
 
     actualizarMatrizModelado() {
-        if (this.posicion != [0,0,0]) {
+        if (this.posicion != [0,0,0]) { //Hay un cambio en la posicion. Sin esto no puede tener una posicion constante porque en cada frame se va volviendo a realizar la traslacion
             mat4.translate(this.matrizModelado, this.matrizModelado, this.posicion);
+            this.posicionAnterior = this.posicion;
         }
-        if (this.angulo != 0) {
-            mat4.rotate(this.matrizModelado, this.matrizModelado, this.angulo, this.rotation);
+        if (this.angulo != 0) { //&& (this.angulo != this.anguloAnterior || this.rotacion != this.rotacionAnterior)
+            mat4.rotate(this.matrizModelado, this.matrizModelado, this.angulo, this.rotacion);
+            this.anguloAnterior = this.angulo;
+            this.rotacionAnterior = this.rotacion;
         }
-        if (this.escala != [1,1,1]) {
+        if (this.escala != [1,1,1]) { //&& this.escala != this.escalaAnterior
             mat4.scale(this.matrizModelado, this.matrizModelado, this.escala);
+            this.escalaAnterior = this.escala;
         }
     }
 
-    setearBuffers(mallaDeTriangulos) {
+    setupVertexShaderMatrix(){
+        var modelMatrixUniform = gl.getUniformLocation(glProgram, "modelMatrix");
+
+        gl.uniformMatrix4fv(modelMatrixUniform, false, this.matrizModelado);
+    }       
+
+    setearBuffers(superficie) {
+        var mallaDeTriangulos = generarSuperficie(superficie, 50, 50);
+
         var webgl_position_buffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, webgl_position_buffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(mallaDeTriangulos.positionBuffer), gl.STATIC_DRAW);
@@ -105,11 +121,15 @@ class Objeto3D {
     }
 
     dibujar(matrizPadre) {
-        var m = mat4.create();
+        var m = matrizPadre;
         this.actualizarMatrizModelado();
-        mat4.multiply(m, this.matrizModelado, matrizPadre);
+        mat4.multiply(m, matrizPadre, this.matrizModelado);
+        //mat4.multiply(m, this.matrizModelado, matrizPadre);
+        this.matrizModelado = m;
 
         if (this.indexBuffer && this.positionBuffer) {
+            this.setupVertexShaderMatrix();
+
             vertexPositionAttribute = gl.getAttribLocation(glProgram, "aVertexPosition");
             gl.enableVertexAttribArray(vertexPositionAttribute);
             gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
@@ -124,7 +144,7 @@ class Objeto3D {
             gl.drawElements(gl.TRIANGLE_STRIP, this.indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
         }
         for (var i = 0; i < this.hijos.length; i++){
-            hijos[i].dibujar(m);
+            this.hijos[i].dibujar(m);
         }
     }
 

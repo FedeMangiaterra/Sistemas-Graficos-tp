@@ -11,7 +11,7 @@
     <body>
 
     	<center>    		            
-            <canvas id="my-canvas" width="1000" height="800">
+            <canvas id="my-canvas" width="1600" height="900">
             	Your browser does not support the HTML5 canvas element.
     		</canvas>    		
     	</center>
@@ -117,6 +117,7 @@
                     initShaders();
                     setupBuffers();
                     setupVertexShaderMatrix();
+                    //drawScene();
                     tick();   
 
                 }else{    
@@ -368,12 +369,12 @@
             }
 
             function setupVertexShaderMatrix(){
-                var modelMatrixUniform = gl.getUniformLocation(glProgram, "modelMatrix");
+                //var modelMatrixUniform = gl.getUniformLocation(glProgram, "modelMatrix");
                 var viewMatrixUniform  = gl.getUniformLocation(glProgram, "viewMatrix");
                 var projMatrixUniform  = gl.getUniformLocation(glProgram, "projMatrix");
                 var normalMatrixUniform  = gl.getUniformLocation(glProgram, "normalMatrix");
 
-                gl.uniformMatrix4fv(modelMatrixUniform, false, modelMatrix);
+                //gl.uniformMatrix4fv(modelMatrixUniform, false, modelMatrix);
                 gl.uniformMatrix4fv(viewMatrixUniform, false, viewMatrix);
                 gl.uniformMatrix4fv(projMatrixUniform, false, projMatrix);
                 gl.uniformMatrix4fv(normalMatrixUniform, false, normalMatrix);
@@ -395,9 +396,28 @@
                 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, trianglesIndexBuffer);
                 gl.drawElements( gl.TRIANGLE_STRIP, trianglesIndexBuffer.number_vertex_point, gl.UNSIGNED_SHORT, 0);*/
 
+                a = new Plano(2,2);
+                obj = new Objeto3D();
+                obj.setearBuffers(a);
+                obj.setPosicion(0,0,2);
+                obj.setRotacion(0,0,1,rotate_angle)
+
+                b = new Esfera(0.5);
+                objj = new Objeto3D();
+                objj.setearBuffers(b);
+                objj.setPosicion(0,0,0.3);
+                //objj.setEscala(0.7,0.7,0.7);
+                obj.agregarHijo(objj);
+
                 sup = new Tubo(1, 5);
                 objeto = new Objeto3D();
-                objeto.dibujarr(sup);
+                objeto.setearBuffers(sup);
+                objeto.setRotacion(1,0,0,rotate_angle);
+                objeto.agregarHijo(obj);
+
+                objeto.dibujar(modelMatrix);
+                mat4.identity(modelMatrix);             
+                //console.log(modelMatrix);
             }
 
  
@@ -408,8 +428,7 @@
                 
                 rotate_angle += 0.01;
                 mat4.identity(modelMatrix);
-                mat4.rotate(modelMatrix,modelMatrix, rotate_angle, [1.0, 0.0, 1.0]);
-
+                //mat4.rotate(modelMatrix,modelMatrix, rotate_angle, [1.0, 0.0, 1.0]);
 
                 mat4.identity(normalMatrix);
                 mat4.multiply(normalMatrix,viewMatrix,modelMatrix);
