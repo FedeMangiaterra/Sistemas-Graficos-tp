@@ -29,14 +29,14 @@ function Esfera(radio){
     }
 
     this.getNormal=function(alfa,beta){
-        var p=getPos(alfa,beta);
+        var p=this.getPosicion(alfa,beta);
         var v=vec3.create();
         vec3.normalize(v,p);
 
         var delta=0.05;
-        var p1=getPos(alfa,beta);
-        var p2=getPos(alfa,beta+delta);
-        var p3=getPos(alfa+delta,beta);
+        var p1=this.getPosicion(alfa,beta);
+        var p2=this.getPosicion(alfa,beta+delta);
+        var p3=this.getPosicion(alfa+delta,beta);
 
         var v1=vec3.fromValues(p2[0]-p1[0],p2[1]-p1[1],p2[2]-p1[2]);
         var v2=vec3.fromValues(p3[0]-p1[0],p3[1]-p1[1],p3[2]-p1[2]);
@@ -66,14 +66,14 @@ function Tubo(radio, altura) {
     }
 
     this.getNormal=function(alfa,beta){
-        var p=getPos(alfa,beta);
+        var p=this.getPosicion(alfa,beta);
         var v=vec3.create();
         vec3.normalize(v,p);
 
         var delta=0.05;
-        var p1=getPos(alfa,beta);
-        var p2=getPos(alfa,beta+delta);
-        var p3=getPos(alfa+delta,beta);
+        var p1=this.getPosicion(alfa,beta);
+        var p2=this.getPosicion(alfa,beta+delta);
+        var p3=this.getPosicion(alfa+delta,beta);
 
         var v1=vec3.fromValues(p2[0]-p1[0],p2[1]-p1[1],p2[2]-p1[2]);
         var v2=vec3.fromValues(p3[0]-p1[0],p3[1]-p1[1],p3[2]-p1[2]);

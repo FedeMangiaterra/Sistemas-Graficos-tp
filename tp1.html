@@ -23,6 +23,8 @@
         <script type="text/javascript" src="objeto3D.js"></script>
 
         <script type="text/javascript" src="primitivas.js"></script>
+
+        <script type="text/javascript" src="discretizadorDeCurvas.js"></script>
         
         <script id="shader-vs" type="x-shader/x-vertex">
 
@@ -111,13 +113,13 @@
                 if(gl) {
 
                     setupWebGL();
-                    /*$(document).ready(function(){
-                        loadShaders();
-                    })*/
                     initShaders();
                     setupBuffers();
                     setupVertexShaderMatrix();
-                    //drawScene();
+                    var arre = [[0,0,0],[1,1,1],[2,2,2],[3,3,3],[4,4,4],[5,5,5],[6,6,6],[7,7,7]];
+                    crearBezierCubica(arre);
+                    console.log(evaluarBezierCubica(1.99,arre));
+                    discretizarCurva(5, arre);
                     tick();   
 
                 }else{    

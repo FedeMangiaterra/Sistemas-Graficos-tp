@@ -55,29 +55,21 @@ class Objeto3D {
         this.indexBuffer = null;
         this.matrizModelado = mat4.create();
         this.posicion = [0,0,0];
-        this.posicionAnterior = [0,0,0];
         this.rotacion = [1,0,0];
-        this.rotacionAnterior = [1,0,0];
         this.angulo = 0;
-        this.anguloAnterior = 0;
         this.escala = [1,1,1];
-        this.escalaAnterior = [1,1,1];
         this.hijos = [];
     }
 
     actualizarMatrizModelado() {
-        if (this.posicion != [0,0,0]) { //Hay un cambio en la posicion. Sin esto no puede tener una posicion constante porque en cada frame se va volviendo a realizar la traslacion
+        if (this.posicion != [0,0,0]) { 
             mat4.translate(this.matrizModelado, this.matrizModelado, this.posicion);
-            this.posicionAnterior = this.posicion;
         }
-        if (this.angulo != 0) { //&& (this.angulo != this.anguloAnterior || this.rotacion != this.rotacionAnterior)
+        if (this.angulo != 0) { 
             mat4.rotate(this.matrizModelado, this.matrizModelado, this.angulo, this.rotacion);
-            this.anguloAnterior = this.angulo;
-            this.rotacionAnterior = this.rotacion;
         }
-        if (this.escala != [1,1,1]) { //&& this.escala != this.escalaAnterior
+        if (this.escala != [1,1,1]) {
             mat4.scale(this.matrizModelado, this.matrizModelado, this.escala);
-            this.escalaAnterior = this.escala;
         }
     }
 
@@ -124,7 +116,6 @@ class Objeto3D {
         var m = matrizPadre;
         this.actualizarMatrizModelado();
         mat4.multiply(m, matrizPadre, this.matrizModelado);
-        //mat4.multiply(m, this.matrizModelado, matrizPadre);
         this.matrizModelado = m;
 
         if (this.indexBuffer && this.positionBuffer) {
