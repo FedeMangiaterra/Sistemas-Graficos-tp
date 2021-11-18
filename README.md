@@ -6,8 +6,8 @@
 * Curvas de Bezier/B-Spline
 * Discretizador de curvas
 * Clase Objeto 3D
+* Algoritmo de superficies de barrido
 ### Falta:
-* Superficies de barrido
 * Armado de la escena
 * Cámaras
 * Personalización de la escena (dat GUI)
