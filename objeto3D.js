@@ -14,7 +14,7 @@ function generarSuperficie(superficie,filas,columnas){
             var u=j/columnas;
             var v=i/filas;
 
-            var pos=superficie.getPosicion(u,v);
+            var pos=superficie.getPosicion(u,v,filas,columnas);
 
             positionBuffer.push(pos[0]);
             positionBuffer.push(pos[1]);
@@ -33,6 +33,7 @@ function generarSuperficie(superficie,filas,columnas){
 
         }
     }
+    console.log(positionBuffer);
     indexBuffer=[];  
     for (i=0; i < filas; i++) {
         for (j=0; j <= columnas; j++) {
@@ -79,8 +80,8 @@ class Objeto3D {
         gl.uniformMatrix4fv(modelMatrixUniform, false, this.matrizModelado);
     }       
 
-    setearBuffers(superficie) {
-        var mallaDeTriangulos = generarSuperficie(superficie, 50, 50);
+    setearBuffers(superficie, filas, columnas) {
+        var mallaDeTriangulos = generarSuperficie(superficie, filas, columnas);
 
         var webgl_position_buffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, webgl_position_buffer);

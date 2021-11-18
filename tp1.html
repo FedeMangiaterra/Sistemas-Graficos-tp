@@ -71,6 +71,7 @@
 
             var mat4=glMatrix.mat4;
             var vec3=glMatrix.vec3;
+            var vec4 = glMatrix.vec4;
 
             var gl = null,
             canvas = null,
@@ -116,10 +117,7 @@
                     initShaders();
                     setupBuffers();
                     setupVertexShaderMatrix();
-                    var arre = [[0,0,0],[1,1,1],[2,2,2],[3,3,3],[4,4,4],[5,5,5],[6,6,6],[7,7,7]];
-                    crearBezierCubica(arre);
-                    console.log(evaluarBezierCubica(1.99,arre));
-                    discretizarCurva(5, arre);
+                    //drawScene();
                     tick();   
 
                 }else{    
@@ -148,88 +146,7 @@
                 mat4.translate(viewMatrix,viewMatrix, [0.0, 0.0, -5.0]);
             }
 
-            /*function loadShaders(){
-
-                $.when(loadVS(), loadFS()).done(function(res1,res2){
-                //this code is executed when all ajax calls are done     
-                    webGLStart();
-                });
-
-                function loadVS() {
-                    return  $.ajax({
-                        url: document.getElementById(vertexShaderFile).innerHTML,
-                        success: function(result){
-                            vertexShaderSource=result;
-                        }
-                    });
-                }   
-
-                function loadFS() {
-                    return  $.ajax({
-                        url: document.getElementById(fragmentShaderFile).innerHTML,
-                        success: function(result){
-                            fragmentShaderSource=result;
-                        }
-                    });
-                }
-            }
-
-            function getShader(gl,code,type) {
-
-                var shader;
-
-                if (type == "fragment") 
-                    shader = gl.createShader(gl.FRAGMENT_SHADER);
-                else // "vertex"
-                    shader = gl.createShader(gl.VERTEX_SHADER);
-
-                gl.shaderSource(shader, code);
-                gl.compileShader(shader);
-
-                if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-                    console.error(gl.getShaderInfoLog(shader));
-                    console.log("aaaa");
-                    return null;
-                }    
-                return shader;
-            }
-                    
-            function initShaders() {
-    
-                var vertexShader= getShader(gl, vertexShaderSource,"vertex");
-                var fragmentShader= getShader(gl, fragmentShaderSource,"fragment");
-
-                shaderProgram = gl.createProgram();
-                gl.attachShader(shaderProgram, vertexShader);
-                gl.attachShader(shaderProgram, fragmentShader);
-                gl.linkProgram(shaderProgram);
-
-                if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-                    alert("Could not initialise shaders");
-                }
-
-                gl.useProgram(shaderProgram);
-
-                shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aPosition");
-                gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-
-                shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aUv");
-                gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
-
-                shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "aNormal");
-                gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
-
-                shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
-                shaderProgram.mMatrixUniform = gl.getUniformLocation(shaderProgram, "uMMatrix");
-                shaderProgram.vMatrixUniform = gl.getUniformLocation(shaderProgram, "uVMatrix");
-                shaderProgram.nMatrixUniform = gl.getUniformLocation(shaderProgram, "uNMatrix");
-                shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
-                shaderProgram.useLightingUniform = gl.getUniformLocation(shaderProgram, "uUseLighting");
-                shaderProgram.ambientColorUniform = gl.getUniformLocation(shaderProgram, "uAmbientColor");
-                shaderProgram.frameUniform = gl.getUniformLocation(shaderProgram, "time");
-                shaderProgram.lightingDirectionUniform = gl.getUniformLocation(shaderProgram, "uLightPosition");
-                shaderProgram.directionalColorUniform = gl.getUniformLocation(shaderProgram, "uDirectionalColor");
-            }     */   
+            
             function initShaders() {
                 //get shader source
                 var fs_source = document.getElementById('shader-fs').innerHTML,
@@ -398,31 +315,35 @@
                 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, trianglesIndexBuffer);
                 gl.drawElements( gl.TRIANGLE_STRIP, trianglesIndexBuffer.number_vertex_point, gl.UNSIGNED_SHORT, 0);*/
 
-                a = new Plano(2,2);
+                /*a = new Plano(2,2);
                 obj = new Objeto3D();
-                obj.setearBuffers(a);
+                obj.setearBuffers(a,20,20);
                 obj.setPosicion(0,0,2);
                 obj.setRotacion(0,0,1,rotate_angle)
 
                 b = new Esfera(0.5);
                 objj = new Objeto3D();
-                objj.setearBuffers(b);
+                objj.setearBuffers(b,20,20);
                 objj.setPosicion(0,0,0.3);
                 //objj.setEscala(0.7,0.7,0.7);
-                obj.agregarHijo(objj);
+                obj.agregarHijo(objj);*/
+                a = new Bloque();
+                obj = new Objeto3D;
+                obj.setearBuffers(a,10,4);
+                obj.setRotacion(1,0,0,rotate_angle);
+                obj.dibujar(modelMatrix);
+               
 
-                sup = new Tubo(1, 5);
+                /*sup = new Tubo(1, 5);
                 objeto = new Objeto3D();
-                objeto.setearBuffers(sup);
+                objeto.setearBuffers(sup,20,20);
                 objeto.setRotacion(1,0,0,rotate_angle);
-                objeto.agregarHijo(obj);
-
-                objeto.dibujar(modelMatrix);
+                objeto.agregarHijo(obj);*/
+                
+                //objeto.dibujar(modelMatrix);
                 mat4.identity(modelMatrix);             
                 //console.log(modelMatrix);
             }
-
- 
 
 
 

@@ -17,73 +17,6 @@ var Base2b3der=function(u) { return -9*u*u+6*u;}		 // -9u2 +6u
 
 var Base3b3der=function(u) { return 3*u*u; }
 
-// bases bspline cubicas
-
-var Base0s3=function(u) { return (1-3*u+3*u*u-u*u*u)*1/6;}  // (1 -3u +3u2 -u3)/6
-
-var Base1s3=function(u) { return (4-6*u*u+3*u*u*u)*1/6; }  // (4  -6u2 +3u3)/6
-
-var Base2s3=function(u) { return (1+3*u+3*u*u-3*u*u*u)*1/6} // (1 -3u +3u2 -3u3)/6
-
-var Base3s3=function(u) { return (u*u*u)*1/6; }  //    u3/6
-
-// bases bspline cubica derivadas
-
-var Base0s3der=function(u) { return (-3 +6*u -3*u*u)/6 }  // (-3 +6u -3u2)/6
-
-var Base1s3der=function(u) { return (-12*u+9*u*u)/6 }   // (-12u +9u2)  /6
-
-var Base2s3der=function(u) { return (3+6*u-9*u*u)/6;}	// (-3 +6u -9u2)/6
-
-var Base3s3der=function(u) { return (3*u*u)*1/6; }
-
-// bases bspline cuadratica
-
-var Base0s2=function(u) { return 0.5*(1-u)*(1-u);}   // 0.5*(1-u)^2
-
-var Base1s2=function(u) { return 0.5+u*(1-u);} 		// 0.5+ u*(1-u)
-
-var Base2s2=function(u) { return 0.5*u*u; } 			// 0.5*u^2
-
-			 
-// bases bspline cuadratica derivadas
-
-var Base0s2der=function(u) { return -1+u;}  	//
-
-var Base1s2der=function(u) { return  1-2*u;} 
-
-var Base2s2der=function(u) { return  u;}
-
-
-
-var curvaBSplineCuadratica=function(u,puntosDeControl,pos){
-    var p0=puntosDeControl[pos];
-    var p1=puntosDeControl[pos+1];
-    var p2=puntosDeControl[pos+2];
-
-    var x=Base0s2(u)*p0[0]+Base1s2(u)*p1[0]+Base2s2(u)*p2[0];
-    var y=Base0s2(u)*p0[1]+Base1s2(u)*p1[1]+Base2s2(u)*p2[1];
-    var z=Base0s2(u)*p0[2]+Base1s2(u)*p1[2]+Base2s2(u)*p2[2];
-
-    return [x,y,z];
-}
-
-function crearBSplineCuadratica(puntosDeControl) {
-    var puntosARecorrer = puntosDeControl.length;
-    puntosCurva = [];
-    var puntoActual = 0;
-    while (puntoActual + 2 < puntosARecorrer) {
-        var u = 0;
-        var delta = 0.01;
-        while (u < 1.01) {
-            puntosCurva.push(curvaBSplineCuadratica(u,puntosDeControl,puntoActual));
-            u += delta;
-        }
-        puntoActual += 1;
-    }
-    console.log(puntosCurva);
-    return puntosCurva;
-}
 
 var curvaBezierCubica=function (u,puntosDeControl,pos){
 
@@ -96,21 +29,22 @@ var curvaBezierCubica=function (u,puntosDeControl,pos){
     var y=Base0b3(u)*p0[1]+Base1b3(u)*p1[1]+Base2b3(u)*p2[1]+Base3b3(u)*p3[1];
     var z=Base0b3(u)*p0[2]+Base1b3(u)*p1[2]+Base2b3(u)*p2[2]+Base3b3(u)*p3[2];
 
-    return [x,y,z];
-}
+    var pos = [x,y,z];
 
-var curvaBSplineCubica=function (u,puntosDeControl,pos){
+    var derx = Base0b3der(u)*p0[0]+Base1b3der(u)*p1[0]+Base2b3der(u)*p2[0]+Base3b3der(u)*p3[0];
+    var dery = Base0b3der(u)*p0[1]+Base1b3der(u)*p1[1]+Base2b3der(u)*p2[1]+Base3b3der(u)*p3[1];
+    var derz = Base0b3der(u)*p0[2]+Base1b3der(u)*p1[2]+Base2b3der(u)*p2[2]+Base3b3der(u)*p3[2];
 
-    var p0=puntosDeControl[pos];
-    var p1=puntosDeControl[pos+1];
-    var p2=puntosDeControl[pos+2];
-    var p3=puntosDeControl[pos+3];
+    var tangente = vec3.fromValues(derx,dery,derz);
+    vec3.normalize(tangente,tangente);
 
-    var x=Base0s3(u)*p0[0]+Base1s3(u)*p1[0]+Base2s3(u)*p2[0]+Base3s3(u)*p3[0];
-    var y=Base0s3(u)*p0[1]+Base1s3(u)*p1[1]+Base2s3(u)*p2[1]+Base3s3(u)*p3[1];
-    var z=Base0s3(u)*p0[2]+Base1s3(u)*p1[2]+Base2s3(u)*p2[2]+Base3s3(u)*p3[2];
+    var normal = [0,0,1]; //Asumo que el plano de la curva es el xy
 
-    return [x,y,z];
+    var binormal = vec3.create();
+    vec3.cross(binormal, tangente, normal);
+    //vec3.normalize(binormal, binormal);
+
+    return [pos, tangente, normal, binormal];
 }
 
 function crearBezierCubica(puntosDeControl) {
@@ -135,27 +69,15 @@ function evaluarBezierCubica(u, puntosDeControl) {
     var parteDecimal = u - parteEntera;
     var puntoInicial = 0;
     if (parteEntera > 0) { 
-        puntoInicial = 3 * parteEntera + 1;
+        puntoInicial = 4 * parteEntera;
+    }
+    if (puntoInicial >= puntosDeControl.length) {
+        puntoInicial -= 4;
+        parteDecimal = 1;
     }
     return curvaBezierCubica(parteDecimal,puntosDeControl,puntoInicial);
 }
 
-function crearBSplineCubica(puntosDeControl) {
-    var puntosARecorrer = puntosDeControl.length;
-    puntosCurva = [];
-    var puntoActual = 0;
-    while (puntoActual + 3 < puntosARecorrer) {
-        var u = 0;
-        var delta = 0.01;
-        while (u < 1.01) {
-            puntosCurva.push(curvaBSplineCubica(u,puntosDeControl,puntoActual));
-            u += delta;
-        }
-        puntoActual += 1;
-    }
-    console.log(puntosCurva);
-    return puntosCurva;
-}
 
 function discretizarCurva(cant_puntos, puntos_curva) {
     var puntos = [];
