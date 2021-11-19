@@ -20,7 +20,7 @@ function generarSuperficie(superficie,filas,columnas){
             positionBuffer.push(pos[1]);
             positionBuffer.push(pos[2]);
 
-            var nrm=superficie.getNormal(u,v);
+            var nrm=superficie.getNormal(u,v,filas,columnas);
 
             normalBuffer.push(nrm[0]);
             normalBuffer.push(nrm[1]);
@@ -114,7 +114,7 @@ class Objeto3D {
     }
 
     dibujar(matrizPadre) {
-        var m = matrizPadre;
+        var m = mat4.create();
         this.actualizarMatrizModelado();
         mat4.multiply(m, matrizPadre, this.matrizModelado);
         this.matrizModelado = m;

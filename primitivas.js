@@ -40,14 +40,14 @@ function superficieBarrido(vertice, nivel, forma, recorrido) {
     return [nuevoPunto[0], nuevoPunto[1], nuevoPunto[2]];
 }
 
-function Anillo() {
+function Anillo(radio) {
 
     this.getPosicion=function(u,v,filasTotales,columnasTotales){
         var u_curva = u * 2;
         var puntosdeControlForma = [[-0.25,0,0],[-0.25,0.3,0],[0.25,0.3,0],[0.25,0,0],[0.25,0,0],[0.25,-0.3,0],[-0.25,-0.3,0],[-0.25,0,0]];
         var puntoCurva = evaluarBezierCubica(u_curva,puntosdeControlForma);
         var forma = [puntoCurva[0]];
-        var recorrido = [[0,0,0],[0,1.3,0],[2,1.3,0],[2,0,0],[2,0,0],[2,-1.3,0],[0,-1.3,0],[0,0,0]];
+        var recorrido = [[-radio,0,0],[-radio,1.33*radio,0],[radio,1.33*radio,0],[radio,0,0],[radio,0,0],[radio,-1.33*radio,0],[-radio,-1.33*radio,0],[-radio,0,0]];
 
         return superficieBarrido(0,v,forma,recorrido);
 
@@ -106,15 +106,13 @@ function Anillo() {
     }
 }
 
-function Bloque() {
+function Modulo(radio,anguloBarrido) {
 
     this.getPosicion=function(u,v,filasTotales,columnasTotales){
-        //var forma = [[1,0,1],[1,0,-1],[-1,0,-1],[-1,0,1],[1,0,1]];
-        //var forma = [[1,0,0],[0,0,-1],[-1,0,0],[0,0,1],[1,0,0]];
-        var forma = [[0.5,0.5,0],[0.5,-0.5,0],[-0.5,-0.5,0],[-0.5,0.5,0],[0.5,0.5,0]];
-        var recorrido = [[0,0,0],[0,1.3,0],[2,1.3,0],[2,0,0],[2,0,0],[2,-1.3,0],[0,-1.3,0],[0,0,0]];
-        //var recorrido = [[0,0,0],[1,1,0],[2,2,0],[3,3,0]];
+        var forma = [[0.75,0.25,0],[0.75,-0.25,0],[-0.75,-0.25,0],[-0.75,0.25,0],[0.75,0.25,0]];
+        var recorrido = [[-radio,0,0],[-radio,1.33*radio,0],[radio,1.33*radio,0],[radio,0,0],[radio,0,0],[radio,-1.33*radio,0],[-radio,-1.33*radio,0],[-radio,0,0]];
         verticeForma = u * columnasTotales;
+        v = v * anguloBarrido / (2*Math.PI);
 
         return superficieBarrido(verticeForma,v,forma,recorrido);
 
@@ -230,12 +228,21 @@ function Esfera(radio){
     }
 }
 
-function Tubo(radio, altura) {
+function Tubo(radio, altura, cerrado = false) {
     this.getPosicion=function(u,v,filasTotales,columnasTotales){
         var theta = u*Math.PI*2;
         var x = Math.cos(theta) * radio;
         var y = v*altura - altura/2;
         var z = Math.sin(theta) * radio;
+        if (cerrado == true && ((v == 0) || (v == 1))) {
+            x = 0;
+            z = 0;
+            if (v == 0) {
+                y += (1 / filasTotales * altura);  
+            } else {
+                y -= (1 / filasTotales * altura);
+            }
+        }
         
         return [x,y,z];
     }
@@ -259,6 +266,12 @@ function Tubo(radio, altura) {
         var n=vec3.create();
         vec3.cross(n,v1,v2);
         vec3.scale(n,n,-1);
+
+        if (cerrado == true && ((beta == 0) || (beta == 1))) {
+            n = [0,-1,0];
+            if (beta == 0) n = [0,1,0];
+        }
+
         return n;
     }
 
