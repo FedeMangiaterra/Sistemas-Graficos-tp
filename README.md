@@ -7,7 +7,7 @@
 * Discretizador de curvas
 * Clase Objeto 3D
 * Algoritmo de superficies de barrido
-### Falta:
 * Armado de la escena
+### Falta:
 * Cámaras
 * Personalización de la escena (dat GUI)
