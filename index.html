@@ -20,6 +20,8 @@
 
         <script type="text/javascript" src="js/gl-matrix.js"></script>
 
+        <script type="text/javascript" src="js/dat.gui.js"></script>
+
         <script type="text/javascript" src="objeto3D.js"></script>
 
         <script type="text/javascript" src="primitivas.js"></script>
@@ -92,10 +94,20 @@
             var viewMatrix = mat4.create();
             var projMatrix = mat4.create();
             var normalMatrix = mat4.create();
-            var rotate_angle = -1.57078;
+            var rotate_angle = 1.57078;
 
             var vertexShaderFile="shader-vs";
             var fragmentShaderFile = "shader-fs";
+
+            var radioAnillo = 3.5
+            var velocidadRotacionAnillo = 0;
+            var cantidadModulos = 8;
+            //var barridoModulo = Math.PI/cantidadModulos;
+            var filasPaneles = 4;
+            var anguloPaneles = Math.PI/4;
+
+            
+            //var largoBarraCentral = 2.25 + filasPaneles*0.8;
             
         //-----------------------------------------------------------------------------------------------------------------------------                                
 //----------------------------------------------------------------------------------------------------------------------------------------------
@@ -118,6 +130,7 @@
                     setupBuffers();
                     setupVertexShaderMatrix();
                     //drawScene();
+                    initMenu();
                     tick();   
 
                 }else{    
@@ -301,13 +314,9 @@
             
             function drawScene(){
                 setupVertexShaderMatrix();
-                
 
-                var radioAnillo = 3.5
-                var cantidadModulos = 8;
                 var barridoModulo = Math.PI/cantidadModulos;
-                var filasPaneles = 4;
-                var anguloPaneles = Math.PI/4;
+            
                 var largoBarraCentral = 2.25 + filasPaneles*0.8;
 
                 objetoEscena = new Objeto3D;
@@ -318,7 +327,7 @@
                 anillo = new Anillo(radioAnillo);
                 objetoAnillo = new Objeto3D;
                 objetoAnillo.setearBuffers(anillo,45,10);
-                objetoAnillo.setRotacion(0,0,1,rotate_angle*2);
+                objetoAnillo.setRotacion(0,0,1,rotate_angle);
 
                 centroAnillo = new Tubo(0.45,0.05, true);
                 objetoCentroAnillo = new Objeto3D;
@@ -457,7 +466,7 @@
 
             function animate(){
                 
-                rotate_angle += 0.01;
+                rotate_angle += velocidadRotacionAnillo;
                 mat4.identity(modelMatrix);
                 //mat4.rotate(modelMatrix,modelMatrix, rotate_angle, [1.0, 0.0, 1.0]);
 
@@ -473,6 +482,14 @@
                 requestAnimationFrame(tick);
                 drawScene();
                 animate();
+            }
+
+            function initMenu(){
+                var gui = new dat.GUI();
+                gui.add(window, "velocidadRotacionAnillo",0,0.15).step(0.001);
+                gui.add(window, "filasPaneles",1,10).step(1);;
+                gui.add(window, "cantidadModulos",2, 8).step(1);
+                gui.add(window, "anguloPaneles",0,2*Math.PI).step(Math.PI/180);
             }
 
             window.onload=initWebGL;
