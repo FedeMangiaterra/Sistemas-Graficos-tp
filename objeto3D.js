@@ -33,7 +33,6 @@ function generarSuperficie(superficie,filas,columnas){
 
         }
     }
-    console.log(positionBuffer);
     indexBuffer=[];  
     for (i=0; i < filas; i++) {
         for (j=0; j <= columnas; j++) {

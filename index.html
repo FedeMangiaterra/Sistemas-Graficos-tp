@@ -302,51 +302,88 @@
             function drawScene(){
                 setupVertexShaderMatrix();
                 
-                /*vertexPositionAttribute = gl.getAttribLocation(glProgram, "aVertexPosition");
-                gl.enableVertexAttribArray(vertexPositionAttribute);
-                gl.bindBuffer(gl.ARRAY_BUFFER, trianglesVerticeBuffer);
-                gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
 
-                vertexNormalAttribute = gl.getAttribLocation(glProgram, "aVertexNormal");
-                gl.enableVertexAttribArray(vertexNormalAttribute);
-                gl.bindBuffer(gl.ARRAY_BUFFER, trianglesNormalBuffer);
-                gl.vertexAttribPointer(vertexNormalAttribute, 3, gl.FLOAT, false, 0, 0);
-
-                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, trianglesIndexBuffer);
-                gl.drawElements( gl.TRIANGLE_STRIP, trianglesIndexBuffer.number_vertex_point, gl.UNSIGNED_SHORT, 0);*/
-
-                /*a = new Plano(2,2);
-                obj = new Objeto3D();
-                obj.setearBuffers(a,20,20);
-                obj.setPosicion(0,0,2);
-                obj.setRotacion(0,0,1,rotate_angle)
-
-                b = new Esfera(0.5);
-                objj = new Objeto3D();
-                objj.setearBuffers(b,20,20);
-                objj.setPosicion(0,0,0.3);
-                //objj.setEscala(0.7,0.7,0.7);
-                obj.agregarHijo(objj);*/
-
-                var radioAnillo = 3
-                var cantidadModulos = 4
+                var radioAnillo = 3.5
+                var cantidadModulos = 4;
                 var barridoModulo = Math.PI/cantidadModulos;
-                var largoBarraCentral = 6;
+                var filasPaneles = 4;
+                var anguloPaneles = Math.PI/4;
+                var largoBarraCentral = 2.25 + filasPaneles*0.8;
 
                 objetoEstacionEspacial = new Objeto3D;
-                objetoEstacionEspacial.setRotacion(0,1,0,Math.PI/6);
+                objetoEstacionEspacial.setRotacion(0,1,0,Math.PI/4);
 
                 anillo = new Anillo(radioAnillo);
                 objetoAnillo = new Objeto3D;
                 objetoAnillo.setearBuffers(anillo,45,10);
-                objetoAnillo.setRotacion(0,0,1,rotate_angle);
+                objetoAnillo.setRotacion(0,1,1,rotate_angle);
 
-                centroAnillo = new Tubo(0.25,0.05, true);
+                centroAnillo = new Tubo(0.45,0.05, true);
                 objetoCentroAnillo = new Objeto3D;
                 objetoCentroAnillo.setRotacion(1,0,0,Math.PI/2);
                 objetoCentroAnillo.setearBuffers(centroAnillo, 20, 20);
 
                 objetoAnillo.agregarHijo(objetoCentroAnillo);
+
+                modulo = new Modulo(radioAnillo, barridoModulo);
+                andamio = new Tubo(0.015, radioAnillo);
+
+                var i = 0;
+
+                for (i = 0; i <= cantidadModulos; i++) {
+                    objetoModulo = new Objeto3D;
+                    objetoConector = new Objeto3D;
+                    objetoModulo.setRotacion(0,0,1,2*i*barridoModulo);
+                    objetoModulo.setearBuffers(modulo, 20, 4);
+                    objetoAndamio_1 = new Objeto3D;
+                    objetoAndamio_1.setPosicion(0,-radioAnillo/2,0);
+                    objetoConector.setRotacion(0,0,1,-barridoModulo/2);
+                    objetoAndamio_1.setearBuffers(andamio,10,10);
+                    objetoConector.agregarHijo(objetoAndamio_1);
+                    
+                    objetoAndamio_2 = new Objeto3D;
+                    objetoAndamio_2.setearBuffers(andamio,10,10);
+                    objetoAndamio_2.setPosicion(0.075,radioAnillo/2,0);
+                    objetoConector.agregarHijo(objetoAndamio_2);
+
+                    objetoModulo.agregarHijo(objetoConector);
+                    objetoAnillo.agregarHijo(objetoModulo);
+                }
+                objetoNucleo = new Objeto3D;
+                objetoNucleo.setRotacion(0,1,0,Math.PI/2);
+
+                bloqueNucleo = new BloqueNucleo();
+                objetoBloqueNucleo_1 = new Objeto3D;
+                objetoBloqueNucleo_1.setEscala(0.07,0.07,0.07);
+                objetoBloqueNucleo_1.setPosicion(-0.875,0,0);
+                //objetoBloqueNucleo_1.setRotacion(0,1,0,Math.PI/2);
+                objetoBloqueNucleo_1.setearBuffers(bloqueNucleo, 30, 30);
+                objetoNucleo.agregarHijo(objetoBloqueNucleo_1);
+                objetoBloqueNucleo_2 = new Objeto3D;
+                objetoBloqueNucleo_2.setEscala(0.07,0.07,0.07);
+                objetoBloqueNucleo_2.setPosicion(0.65,0,0);
+                //objetoBloqueNucleo_1.setRotacion(0,1,0,Math.PI/2);
+                objetoBloqueNucleo_2.setearBuffers(bloqueNucleo, 30, 30);
+                objetoNucleo.agregarHijo(objetoBloqueNucleo_2);
+
+                moduloNucleo_1 = new ModuloNucleo_1();
+                objetoPrimerModuloNucleo_1 = new Objeto3D;
+                objetoPrimerModuloNucleo_1.setEscala(1.5,1.5,1.5);
+                objetoPrimerModuloNucleo_1.setearBuffers(moduloNucleo_1, 20, 20);
+                objetoNucleo.agregarHijo(objetoPrimerModuloNucleo_1);
+
+                objetoSegundoModuloNucleo_1 = new Objeto3D;
+                objetoSegundoModuloNucleo_1.setEscala(1.5,1.5,1.5);
+                objetoSegundoModuloNucleo_1.setPosicion(-1.530,0,0);
+                objetoSegundoModuloNucleo_1.setearBuffers(moduloNucleo_1, 20, 20);
+                objetoNucleo.agregarHijo(objetoSegundoModuloNucleo_1);
+
+                moduloNucleo_2 = new ModuloNucleo_2();
+                objetoModuloNucleo_2 = new Objeto3D;
+                objetoModuloNucleo_2.setPosicion(1.15,0,0);
+                objetoModuloNucleo_2.setEscala(1.3,1.3,1.3);
+                objetoModuloNucleo_2.setearBuffers(moduloNucleo_2, 20, 20);
+                objetoNucleo.agregarHijo(objetoModuloNucleo_2);
 
                 barraCentral = new Tubo(0.075, largoBarraCentral, true);
                 objetoBarraCentral = new Objeto3D;
@@ -354,34 +391,42 @@
                 objetoBarraCentral.setPosicion(0,0,largoBarraCentral/2);
                 objetoBarraCentral.setearBuffers(barraCentral, 20, 20);
 
-                objetoAnillo.agregarHijo(objetoBarraCentral);
 
-                modulo = new Modulo(radioAnillo, barridoModulo);
+                panel = new Plano(0.75,0.15);
+                unionPaneles = new Tubo(0.012, 0.3, true);
+                for (i = 0; i < filasPaneles; i++) {
+                    objetoPanelDoble = new Objeto3D;
+                    objetoPanelDoble.setPosicion(-2.75 - 0.6*i,0,0);
+                    objetoPanelDoble.setRotacion(0,1,0,Math.PI/2);
 
+                    objetoPanelDoble.setEscala(2,2,2);
+                
+                    objetoPrimerPanel = new Objeto3D;
+                    objetoPrimerPanel.setPosicion(0.5,0,0);
+                    objetoPrimerPanel.setRotacion(1,0,0,anguloPaneles);
+                    objetoSegundoPanel = new Objeto3D;
+                    objetoSegundoPanel.setPosicion(-0.5,0,0);
+                    objetoSegundoPanel.setRotacion(1,0,0,anguloPaneles);
+                    objetoUnionPaneles = new Objeto3D;
+                    objetoUnionPaneles.setRotacion(0,0,1,Math.PI/2);
+                    objetoPrimerPanel.setearBuffers(panel,3,3);
+                    objetoSegundoPanel.setearBuffers(panel,3,3);
+                    objetoUnionPaneles.setearBuffers(unionPaneles,15,15);
 
-                var i = 0;
-
-                for (i = 0; i <= cantidadModulos; i++) {
-                    objetoModulo = new Objeto3D;
-                    objetoModulo.setRotacion(0,0,1,2*i*barridoModulo);
-                    objetoModulo.setearBuffers(modulo, 20, 4);
-                    objetoAnillo.agregarHijo(objetoModulo);
+                    objetoPanelDoble.agregarHijo(objetoPrimerPanel);
+                    objetoPanelDoble.agregarHijo(objetoSegundoPanel);
+                    objetoPanelDoble.agregarHijo(objetoUnionPaneles);
+                    objetoNucleo.agregarHijo(objetoPanelDoble);
                 }
 
-                objetoEstacionEspacial.agregarHijo(objetoAnillo);
+                objetoAnillo.agregarHijo(objetoNucleo);
+                objetoAnillo.agregarHijo(objetoBarraCentral);
 
+                objetoEstacionEspacial.agregarHijo(objetoAnillo);
+                
                 objetoEstacionEspacial.dibujar(modelMatrix);
                
-
-                /*sup = new Tubo(1, 5, true);
-                objeto = new Objeto3D();
-                objeto.setearBuffers(sup,20,20);
-                objeto.setRotacion(1,0,0,rotate_angle);*/
-                
-                
-                //objeto.dibujar(modelMatrix);
                 mat4.identity(modelMatrix);             
-                //console.log(modelMatrix);
             }
 
 
