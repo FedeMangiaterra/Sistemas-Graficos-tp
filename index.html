@@ -304,11 +304,13 @@
                 
 
                 var radioAnillo = 3.5
-                var cantidadModulos = 4;
+                var cantidadModulos = 8;
                 var barridoModulo = Math.PI/cantidadModulos;
                 var filasPaneles = 4;
                 var anguloPaneles = Math.PI/4;
                 var largoBarraCentral = 2.25 + filasPaneles*0.8;
+
+                objetoEscena = new Objeto3D;
 
                 objetoEstacionEspacial = new Objeto3D;
                 objetoEstacionEspacial.setRotacion(0,1,0,Math.PI/4);
@@ -316,7 +318,7 @@
                 anillo = new Anillo(radioAnillo);
                 objetoAnillo = new Objeto3D;
                 objetoAnillo.setearBuffers(anillo,45,10);
-                objetoAnillo.setRotacion(0,1,1,rotate_angle);
+                objetoAnillo.setRotacion(0,0,1,rotate_angle*2);
 
                 centroAnillo = new Tubo(0.45,0.05, true);
                 objetoCentroAnillo = new Objeto3D;
@@ -330,14 +332,15 @@
 
                 var i = 0;
 
-                for (i = 0; i <= cantidadModulos; i++) {
+                for (i = 0; i < cantidadModulos; i++) {
                     objetoModulo = new Objeto3D;
                     objetoConector = new Objeto3D;
-                    objetoModulo.setRotacion(0,0,1,2*i*barridoModulo);
+                    var fase = 2*i*barridoModulo;
+                    objetoModulo.setRotacion(0,0,1,fase);
                     objetoModulo.setearBuffers(modulo, 20, 4);
                     objetoAndamio_1 = new Objeto3D;
-                    objetoAndamio_1.setPosicion(0,-radioAnillo/2,0);
-                    objetoConector.setRotacion(0,0,1,-barridoModulo/2);
+                    objetoAndamio_1.setPosicion(0,radioAnillo/2,0);
+                    objetoConector.setRotacion(0,0,1,(Math.PI-barridoModulo)/2 + fase);
                     objetoAndamio_1.setearBuffers(andamio,10,10);
                     objetoConector.agregarHijo(objetoAndamio_1);
                     
@@ -346,7 +349,7 @@
                     objetoAndamio_2.setPosicion(0.075,radioAnillo/2,0);
                     objetoConector.agregarHijo(objetoAndamio_2);
 
-                    objetoModulo.agregarHijo(objetoConector);
+                    objetoAnillo.agregarHijo(objetoConector);
                     objetoAnillo.agregarHijo(objetoModulo);
                 }
                 objetoNucleo = new Objeto3D;
@@ -419,12 +422,33 @@
                     objetoNucleo.agregarHijo(objetoPanelDoble);
                 }
 
-                objetoAnillo.agregarHijo(objetoNucleo);
-                objetoAnillo.agregarHijo(objetoBarraCentral);
+                objetoEstacionEspacial.agregarHijo(objetoNucleo);
+                objetoEstacionEspacial.agregarHijo(objetoBarraCentral);
 
                 objetoEstacionEspacial.agregarHijo(objetoAnillo);
+
+                objetoEscena.agregarHijo(objetoEstacionEspacial)
+
+                objetoCapsula = new Objeto3D;
+                objetoCapsula.setRotacion(0,1,1,rotate_angle);
+                objetoCapsula.setPosicion(2,2,0);
+
+                capsulaMayor = new CapsulaMayor();
+                objetoCapsulaMayor = new Objeto3D;
+                objetoCapsulaMayor.setearBuffers(capsulaMayor, 25, 25);
+                objetoCapsula.agregarHijo(objetoCapsulaMayor);
+
+                capsulaMenor = new CapsulaMenor();
+                objetoCapsulaMenor = new Objeto3D;
+                objetoCapsulaMenor.setEscala(0.5,0.5,0.5);
+                objetoCapsulaMenor.setPosicion(0.35,0,0);
+                objetoCapsulaMenor.setearBuffers(capsulaMenor, 25, 25);
+                objetoCapsula.agregarHijo(objetoCapsulaMenor);
                 
-                objetoEstacionEspacial.dibujar(modelMatrix);
+                objetoEscena.agregarHijo(objetoCapsula);
+
+                
+                objetoEscena.dibujar(modelMatrix);
                
                 mat4.identity(modelMatrix);             
             }

@@ -58,29 +58,6 @@ function Anillo(radio) {
     }
 
     this.getNormal=function(alfa,beta,filasTotales,columnasTotales){
-        /*var recorrido = [[0,0,0],[0,1.3,0],[2,1.3,0],[2,0,0],[2,0,0],[2,-1.3,0],[0,-1.3,0],[0,0,0]];
-        var cant_curvas = recorrido.length / 4;
-        var u = beta * cant_curvas;
-        if (u >= 1*cant_curvas) {
-            u = 1*cant_curvas - 0.001;
-        }
-
-        var n = evaluarBezierCubica(u, recorrido);
-        var normal = vec3.fromValues(n[3][0],n[3][1],n[3][2]);
-        vec3.normalize(normal,normal);
-        //vec3.scale(normal,normal,-1);
-        var n = vec3.create();
-        vec3.rotateY(n,normal,normal,Math.PI/4);*/
-
-        /*verticeForma = alfa * columnasTotales;
-
-        if (verticeForma == 0 || verticeForma == 3 || verticeForma == 4) {
-            var normal = vec3.fromValues(0,0,1);
-            vec3.normalize(normal,normal);
-        } else {
-            var normal = vec3.fromValues(0,0,-1);
-            vec3.normalize(normal,normal);
-        }*/
 
         var p=this.getPosicion(alfa,beta,filasTotales,columnasTotales);
         var v=vec3.create();
@@ -101,8 +78,6 @@ function Anillo(radio) {
         vec3.cross(n,v1,v2);
         vec3.scale(n,n,-1);
         return n;
-        
-        //return normal;
     }
 
     this.getCoordenadasTextura=function(u,v){
@@ -116,10 +91,16 @@ function Modulo(radio,anguloBarrido) {
         var forma = [[0.75,0.25,0],[0.75,-0.25,0],[-0.75,-0.25,0],[-0.75,0.25,0],[0.75,0.25,0]];
         var recorrido = [[-radio,0,0],[-radio,1.33*radio,0],[radio,1.33*radio,0],[radio,0,0],[radio,0,0],[radio,-1.33*radio,0],[-radio,-1.33*radio,0],[-radio,0,0]];
         verticeForma = u * columnasTotales;
-        v = v * anguloBarrido / (2*Math.PI);
-
-        return superficieBarrido(verticeForma,v,forma,recorrido, null);
-
+        var fraccionRecorrida = anguloBarrido / (2*Math.PI)
+        v = v * fraccionRecorrida;
+        
+        if (v == 0 ) {
+            return evaluarBezierCubica((v + 1 * fraccionRecorrida / filasTotales)*2, recorrido)[0];
+        } else if ( v == anguloBarrido / (2*Math.PI)) {
+            return evaluarBezierCubica((v - 1 * fraccionRecorrida / filasTotales)*2, recorrido)[0];
+        } else {
+            return superficieBarrido(verticeForma,v,forma,recorrido, null);
+        }
     }
 
     this.getNormal=function(alfa,beta,filasTotales,columnasTotales){
@@ -292,6 +273,99 @@ function ModuloNucleo_2() {
             return [0.25 - (1 / filasTotales),0,0];
         }
 
+    }
+
+    this.getNormal=function(alfa,beta,filasTotales,columnasTotales){
+        var p=this.getPosicion(alfa,beta,filasTotales,columnasTotales);
+        var v=vec3.create();
+        vec3.normalize(v,p);
+
+        var delta=0.01;
+        var p1=this.getPosicion(alfa,beta,filasTotales,columnasTotales);
+        var p2=this.getPosicion(alfa,beta+delta,filasTotales,columnasTotales);
+        var p3=this.getPosicion(alfa+delta,beta,filasTotales,columnasTotales);
+
+        var v1=vec3.fromValues(p2[0]-p1[0],p2[1]-p1[1],p2[2]-p1[2]);
+        var v2=vec3.fromValues(p3[0]-p1[0],p3[1]-p1[1],p3[2]-p1[2]);
+
+        vec3.normalize(v1,v1);
+        vec3.normalize(v2,v2);
+        
+        var n=vec3.create();
+        vec3.cross(n,v1,v2);
+        vec3.scale(n,n,-1);
+        return n;
+    }
+
+    this.getCoordenadasTextura=function(u,v){
+        return [u,v];
+    }
+}
+
+function CapsulaMayor() {
+    
+    this.getPosicion=function(u,v,filasTotales,columnasTotales){
+        var u_curva = u * 2;
+        var puntosdeControlForma = [[-0.25,0,0],[-0.25,0.3,0],[0.25,0.3,0],[0.25,0,0],[0.25,0,0],[0.25,-0.3,0],[-0.25,-0.3,0],[-0.25,0,0]];
+        var puntoCurva = evaluarBezierCubica(u_curva,puntosdeControlForma);
+        var forma = [puntoCurva[0]];
+        var recorrido = [[-0.25,0,0],[-0.08,0,0],[0.08,0,0],[0.25,0,0]];
+        var matrizTransformacion = mat4.create();
+        if (v <= 0.8) {
+            var escala = 0.4 + 0.6*Math.sin(Math.PI*v*0.5/0.8);
+        } else {
+            var escala = 2.6-v*2;
+        }
+        mat4.scale(matrizTransformacion, matrizTransformacion, [escala, escala, escala]);
+        if (v != 0 && v != 1){
+            return superficieBarrido(0,v,forma,recorrido, matrizTransformacion);
+        } else if (v == 0) {
+            return [-0.25 + (1 / filasTotales),0,0];
+        } else if (v == 1) {
+            return [0.25 - (1 / filasTotales),0,0];
+        }
+
+    }
+
+    this.getNormal=function(alfa,beta,filasTotales,columnasTotales){
+        var p=this.getPosicion(alfa,beta,filasTotales,columnasTotales);
+        var v=vec3.create();
+        vec3.normalize(v,p);
+
+        var delta=0.01;
+        var p1=this.getPosicion(alfa,beta,filasTotales,columnasTotales);
+        var p2=this.getPosicion(alfa,beta+delta,filasTotales,columnasTotales);
+        var p3=this.getPosicion(alfa+delta,beta,filasTotales,columnasTotales);
+
+        var v1=vec3.fromValues(p2[0]-p1[0],p2[1]-p1[1],p2[2]-p1[2]);
+        var v2=vec3.fromValues(p3[0]-p1[0],p3[1]-p1[1],p3[2]-p1[2]);
+
+        vec3.normalize(v1,v1);
+        vec3.normalize(v2,v2);
+        
+        var n=vec3.create();
+        vec3.cross(n,v1,v2);
+        vec3.scale(n,n,-1);
+        return n;
+    }
+
+    this.getCoordenadasTextura=function(u,v){
+        return [u,v];
+    }
+}
+
+function CapsulaMenor() {
+    
+    this.getPosicion=function(u,v,filasTotales,columnasTotales){
+        var u_curva = u * 2;
+        var puntosdeControlForma = [[-0.25,0,0],[-0.25,0.3,0],[0.25,0.3,0],[0.25,0,0],[0.25,0,0],[0.25,-0.3,0],[-0.25,-0.3,0],[-0.25,0,0]];
+        var puntoCurva = evaluarBezierCubica(u_curva,puntosdeControlForma);
+        var forma = [puntoCurva[0]];
+        var recorrido = [[-0.25,0,0],[-0.08,0,0],[0.08,0,0],[0.25,0,0]];
+        var matrizTransformacion = mat4.create();
+        var escala = 0.3 + 0.7*Math.sin(Math.PI*v*0.5);
+        mat4.scale(matrizTransformacion, matrizTransformacion, [escala, escala, escala]);
+        return superficieBarrido(0,v,forma,recorrido, matrizTransformacion);
     }
 
     this.getNormal=function(alfa,beta,filasTotales,columnasTotales){
