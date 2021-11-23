@@ -8,6 +8,7 @@
 * Clase Objeto 3D
 * Algoritmo de superficies de barrido
 * Armado de la escena
+* Personalización de la escena (dat GUI)
 ### Falta:
 * Cámaras
-* Personalización de la escena (dat GUI)
+
