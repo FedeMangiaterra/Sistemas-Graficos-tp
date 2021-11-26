@@ -54,6 +54,7 @@ class Objeto3D {
         this.uvBuffer = null;
         this.indexBuffer = null;
         this.matrizModelado = mat4.create();
+        this.matrizNormal = mat4.create();
         this.posicion = [0,0,0];
         this.rotacion = [1,0,0];
         this.angulo = 0;
@@ -71,12 +72,18 @@ class Objeto3D {
         if (this.escala != [1,1,1]) {
             mat4.scale(this.matrizModelado, this.matrizModelado, this.escala);
         }
+        mat4.identity(this.matrizNormal);
+        mat4.multiply(this.matrizNormal,viewMatrix,this.matrizModelado);
+        mat4.invert(this.matrizNormal,this.matrizNormal);
+        mat4.transpose(this.matrizNormal,this.matrizNormal);
     }
 
     setupVertexShaderMatrix(){
         var modelMatrixUniform = gl.getUniformLocation(glProgram, "modelMatrix");
+        var normalMatrixUniform = gl.getUniformLocation(glProgram, "normalMatrix");
 
         gl.uniformMatrix4fv(modelMatrixUniform, false, this.matrizModelado);
+        gl.uniformMatrix4fv(normalMatrixUniform, false, this.matrizNormal);
     }       
 
     setearBuffers(superficie, filas, columnas) {
