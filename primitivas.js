@@ -76,7 +76,7 @@ function Anillo(radio) {
         
         var n=vec3.create();
         vec3.cross(n,v1,v2);
-        vec3.scale(n,n,-1);
+        //vec3.scale(n,n,-1);
         return n;
     }
 
@@ -104,7 +104,7 @@ function Modulo(radio,anguloBarrido) {
     }
 
     this.getNormal=function(alfa,beta,filasTotales,columnasTotales){
-        var recorrido = [[0,0,0],[0,1.3,0],[2,1.3,0],[2,0,0],[2,0,0],[2,-1.3,0],[0,-1.3,0],[0,0,0]];
+        /*var recorrido = [[0,0,0],[0,1.3,0],[2,1.3,0],[2,0,0],[2,0,0],[2,-1.3,0],[0,-1.3,0],[0,0,0]];
         var cant_curvas = recorrido.length / 4;
         var u = beta * cant_curvas;
         if (u >= 1*cant_curvas) {
@@ -116,7 +116,7 @@ function Modulo(radio,anguloBarrido) {
         vec3.normalize(normal,normal);
         //vec3.scale(normal,normal,-1);
         var n = vec3.create();
-        vec3.rotateY(n,normal,normal,Math.PI/4);
+        vec3.rotateY(n,normal,normal,Math.PI/4);*/
 
         /*verticeForma = alfa * columnasTotales;
 
@@ -128,7 +128,7 @@ function Modulo(radio,anguloBarrido) {
             vec3.normalize(normal,normal);
         }*/
 
-        /*var p=this.getPosicion(alfa,beta,filasTotales,columnasTotales);
+        var p=this.getPosicion(alfa,beta,filasTotales,columnasTotales);
         var v=vec3.create();
         vec3.normalize(v,p);
 
@@ -145,10 +145,10 @@ function Modulo(radio,anguloBarrido) {
         
         var n=vec3.create();
         vec3.cross(n,v1,v2);
-        vec3.scale(n,n,-1);
-        return n;*/
+        //vec3.scale(n,n,-1);
+        return n;
         
-        return normal;
+        //return normal;
     }
 
     this.getCoordenadasTextura=function(u,v){
@@ -194,7 +194,7 @@ function BloqueNucleo() {
         
         var n=vec3.create();
         vec3.cross(n,v1,v2);
-        vec3.scale(n,n,-1);
+        //vec3.scale(n,n,-1);
         return n;
     }
 
@@ -489,7 +489,7 @@ function Tubo(radio, altura, cerrado = false) {
         
         var n=vec3.create();
         vec3.cross(n,v1,v2);
-        vec3.scale(n,n,-1);
+        //vec3.scale(n,n,-1);
 
         if (cerrado == true && ((beta == 0) || (beta == 1))) {
             n = [0,-1,0];
