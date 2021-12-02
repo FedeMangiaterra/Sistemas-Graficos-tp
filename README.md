@@ -9,6 +9,7 @@
 * Algoritmo de superficies de barrido
 * Armado de la escena
 * Personalización de la escena (dat GUI)
+* Camara de la capsula
 ### Falta:
-* Cámaras
+* Cámaras orbitales
 
