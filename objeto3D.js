@@ -72,7 +72,7 @@ class Objeto3D {
         if (this.escala != [1,1,1]) {
             mat4.scale(this.matrizModelado, this.matrizModelado, this.escala);
         }
-        mat4.identity(this.matrizNormal);
+        //mat4.identity(this.matrizNormal);
         mat4.multiply(this.matrizNormal,viewMatrix,this.matrizModelado);
         mat4.invert(this.matrizNormal,this.matrizNormal);
         mat4.transpose(this.matrizNormal,this.matrizNormal);
@@ -161,6 +161,30 @@ class Objeto3D {
 
     setEscala(x,y,z) {
         this.escala = [x,y,z];
+    }
+
+    setMatrizModelado(matrizModelado) {
+        this.matrizModelado = matrizModelado;
+    }
+
+    getMatrizModelado() {
+        var m=mat4.clone(this.matrizModelado);
+        if (this.posicion != [0,0,0]) { 
+            mat4.translate(m, m, this.posicion);
+        }
+        if (this.angulo != 0) { 
+            mat4.rotate(m, m, this.angulo, this.rotacion);
+        }
+        if (this.escala != [1,1,1]) {
+            mat4.scale(m, m, this.escala);
+        }
+        return m;
+    }
+
+    getMatrizVista() {
+        var m=mat4.clone(this.matrizModelado);            
+        mat4.invert(m,m);
+        return m;
     }
 
     dibujarr(superficie) {

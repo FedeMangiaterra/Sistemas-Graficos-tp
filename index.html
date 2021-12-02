@@ -27,6 +27,8 @@
         <script type="text/javascript" src="primitivas.js"></script>
 
         <script type="text/javascript" src="discretizadorDeCurvas.js"></script>
+
+        <script type="text/javascript" src="droneCamera.js"></script>
         
         <script id="shader-vs" type="x-shader/x-vertex">
 
@@ -105,6 +107,10 @@
             //var barridoModulo = Math.PI/cantidadModulos;
             var filasPaneles = 4;
             var anguloPaneles = Math.PI/4;
+
+            var modoCamara = "default";
+
+            var camara1 = new DroneCameraControl([-3,0,-5]);
 
             
             //var largoBarraCentral = 2.25 + filasPaneles*0.8;
@@ -313,6 +319,8 @@
             }                  
             
             function drawScene(){
+                camara1.update();
+                //viewMatrix = camara1.getMatrix();
                 setupVertexShaderMatrix();
 
                 var barridoModulo = Math.PI/cantidadModulos;
@@ -439,8 +447,17 @@
                 objetoEscena.agregarHijo(objetoEstacionEspacial)
 
                 objetoCapsula = new Objeto3D;
-                objetoCapsula.setRotacion(0,1,1,rotate_angle);
-                objetoCapsula.setPosicion(2,2,0);
+                objetoCapsula.setMatrizModelado(camara1.getMatrix());
+                objetoCapsula.setRotacion(0,-1,0,Math.PI/2);
+                //objetoCapsula.setPosicion(0.5,0,0.5);
+
+                //camaraCapsula = new Esfera(0.12);
+                objetoCamaraCapsula = new Objeto3D;
+                //objetoCamaraCapsula.setearBuffers(camaraCapsula,20,20);
+                objetoCamaraCapsula.setMatrizModelado(camara1.getMatrix());
+                objetoCamaraCapsula.setPosicion(0.1,0,1);
+                //objetoCamaraCapsula.setRotacion(0,0,1,Math.PI/2);
+                objetoCapsula.agregarHijo(objetoCamaraCapsula);
 
                 capsulaMayor = new CapsulaMayor();
                 objetoCapsulaMayor = new Objeto3D;
@@ -453,13 +470,32 @@
                 objetoCapsulaMenor.setPosicion(0.35,0,0);
                 objetoCapsulaMenor.setearBuffers(capsulaMenor, 25, 25);
                 objetoCapsula.agregarHijo(objetoCapsulaMenor);
+
+                /*var posCapsula = vec4.create(); 
+                vec4.transformMat4(posCapsula, vec4.create(), objetoCapsula.getMatrizModelado());
+                var posCamaraCapsula = vec4.create();
+                vec4.transformMat4(posCamaraCapsula, vec4.create(), objetoCamaraCapsula.getMatrizModelado());
+                var posCamaraCapsula3 = [posCamaraCapsula[0], posCamaraCapsula[1], posCamaraCapsula[2]];
+                var posCapsula3 = [posCapsula[0], posCapsula[1], posCapsula[2]];*/
+
+                if (modoCamara == "capsula") {
+                    var matrizModeladoCapsula = objetoCapsula.getMatrizModelado();
+                    var matrizModeladoCamaraCapsula = objetoCamaraCapsula.getMatrizModelado();
+                    var posCapsula3 = [matrizModeladoCapsula[12], matrizModeladoCapsula[13], matrizModeladoCapsula[14]];
+                    var posCamaraCapsula3 = [matrizModeladoCamaraCapsula[12], matrizModeladoCamaraCapsula[13], matrizModeladoCamaraCapsula[14]];
+                    mat4.lookAt(viewMatrix, posCamaraCapsula3, posCapsula3,  [0,0,1]);
+                }
                 
                 objetoEscena.agregarHijo(objetoCapsula);
 
                 
                 objetoEscena.dibujar(modelMatrix);
                
-                mat4.identity(modelMatrix);             
+                mat4.identity(modelMatrix);
+                if (modoCamara == "default") {
+                    mat4.identity(viewMatrix);
+                    mat4.translate(viewMatrix,viewMatrix, [0.0, 0.0, -5.0]);
+                }            
             }
 
 
@@ -483,6 +519,17 @@
                 drawScene();
                 animate();
             }
+
+            document.addEventListener("keydown",function(e){
+
+                switch ( e.key ) {
+
+                    case "0": 
+                        modoCamara = "default"; break;
+                    case "1": 
+                        modoCamara = "capsula"; break;
+                }
+            }) 
 
             function initMenu(){
                 var gui = new dat.GUI();

@@ -63,7 +63,7 @@ function Anillo(radio) {
         var v=vec3.create();
         vec3.normalize(v,p);
 
-        var delta=0.01;
+        var delta = 0.001;
         var p1=this.getPosicion(alfa,beta,filasTotales,columnasTotales);
         var p2=this.getPosicion(alfa,beta+delta,filasTotales,columnasTotales);
         var p3=this.getPosicion(alfa+delta,beta,filasTotales,columnasTotales);
@@ -145,7 +145,9 @@ function Modulo(radio,anguloBarrido) {
         
         var n=vec3.create();
         vec3.cross(n,v1,v2);
-        //vec3.scale(n,n,-1);
+        if (alfa >= 0.5 && alfa < 0.75) {
+            vec3.scale(n,n,-1);
+        }
         return n;
         
         //return normal;
@@ -181,7 +183,7 @@ function BloqueNucleo() {
         var v=vec3.create();
         vec3.normalize(v,p);
 
-        var delta=0.01;
+        var delta = 0.001;
         var p1=this.getPosicion(alfa,beta,filasTotales,columnasTotales);
         var p2=this.getPosicion(alfa,beta+delta,filasTotales,columnasTotales);
         var p3=this.getPosicion(alfa+delta,beta,filasTotales,columnasTotales);
@@ -232,7 +234,7 @@ function ModuloNucleo_1() {
         var v=vec3.create();
         vec3.normalize(v,p);
 
-        var delta=0.01;
+        var delta = 0.001;
         var p1=this.getPosicion(alfa,beta,filasTotales,columnasTotales);
         var p2=this.getPosicion(alfa,beta+delta,filasTotales,columnasTotales);
         var p3=this.getPosicion(alfa+delta,beta,filasTotales,columnasTotales);
@@ -280,7 +282,7 @@ function ModuloNucleo_2() {
         var v=vec3.create();
         vec3.normalize(v,p);
 
-        var delta=0.01;
+        var delta = 0.001;
         var p1=this.getPosicion(alfa,beta,filasTotales,columnasTotales);
         var p2=this.getPosicion(alfa,beta+delta,filasTotales,columnasTotales);
         var p3=this.getPosicion(alfa+delta,beta,filasTotales,columnasTotales);
@@ -310,6 +312,7 @@ function CapsulaMayor() {
         var puntoCurva = evaluarBezierCubica(u_curva,puntosdeControlForma);
         var forma = [puntoCurva[0]];
         var recorrido = [[-0.25,0,0],[-0.08,0,0],[0.08,0,0],[0.25,0,0]];
+        //var recorrido = [[0,-0.25,0],[0,-0.08,0],[0,0.08,0],[0,0.25,0]];
         var matrizTransformacion = mat4.create();
         if (v <= 0.8) {
             var escala = 0.4 + 0.6*Math.sin(Math.PI*v*0.5/0.8);
@@ -332,7 +335,7 @@ function CapsulaMayor() {
         var v=vec3.create();
         vec3.normalize(v,p);
 
-        var delta=0.01;
+        var delta = 0.001;
         var p1=this.getPosicion(alfa,beta,filasTotales,columnasTotales);
         var p2=this.getPosicion(alfa,beta+delta,filasTotales,columnasTotales);
         var p3=this.getPosicion(alfa+delta,beta,filasTotales,columnasTotales);
@@ -345,7 +348,7 @@ function CapsulaMayor() {
         
         var n=vec3.create();
         vec3.cross(n,v1,v2);
-        vec3.scale(n,n,-1);
+        //vec3.scale(n,n,-1);
         return n;
     }
 
@@ -362,6 +365,7 @@ function CapsulaMenor() {
         var puntoCurva = evaluarBezierCubica(u_curva,puntosdeControlForma);
         var forma = [puntoCurva[0]];
         var recorrido = [[-0.25,0,0],[-0.08,0,0],[0.08,0,0],[0.25,0,0]];
+        //var recorrido = [[0,-0.25,0],[0,-0.08,0],[0,0.08,0],[0,0.25,0]];
         var matrizTransformacion = mat4.create();
         var escala = 0.3 + 0.7*Math.sin(Math.PI*v*0.5);
         mat4.scale(matrizTransformacion, matrizTransformacion, [escala, escala, escala]);
@@ -373,7 +377,7 @@ function CapsulaMenor() {
         var v=vec3.create();
         vec3.normalize(v,p);
 
-        var delta=0.01;
+        var delta = 0.001;
         var p1=this.getPosicion(alfa,beta,filasTotales,columnasTotales);
         var p2=this.getPosicion(alfa,beta+delta,filasTotales,columnasTotales);
         var p3=this.getPosicion(alfa+delta,beta,filasTotales,columnasTotales);
