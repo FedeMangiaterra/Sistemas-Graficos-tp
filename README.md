@@ -1,5 +1,5 @@
 # Sistemas-Graficos-tp1
-## Trabajo Incompleto
+## Trabajo Completo
 ### Está hecho:
 * Creacion de malla de triángulos
 * Algunas superficies
@@ -10,6 +10,6 @@
 * Armado de la escena
 * Personalización de la escena (dat GUI)
 * Camara de la capsula
-### Falta:
-* Cámaras orbitales
+* Camaras orbitales
+
 
