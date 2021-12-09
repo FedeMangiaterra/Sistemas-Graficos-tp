@@ -60,6 +60,7 @@ class Objeto3D {
         this.angulo = 0;
         this.escala = [1,1,1];
         this.hijos = [];
+        this.colorObjeto = [1,1,1];
     }
 
     actualizarMatrizModelado() {
@@ -73,7 +74,7 @@ class Objeto3D {
             mat4.scale(this.matrizModelado, this.matrizModelado, this.escala);
         }
         //mat4.identity(this.matrizNormal);
-        mat4.multiply(this.matrizNormal,viewMatrix,this.matrizModelado);
+        mat4.multiply(this.matrizNormal,mat4.create(),this.matrizModelado);
         mat4.invert(this.matrizNormal,this.matrizNormal);
         mat4.transpose(this.matrizNormal,this.matrizNormal);
     }
@@ -81,6 +82,9 @@ class Objeto3D {
     setupVertexShaderMatrix(){
         var modelMatrixUniform = gl.getUniformLocation(glProgram, "modelMatrix");
         var normalMatrixUniform = gl.getUniformLocation(glProgram, "normalMatrix");
+
+        var colorDifusoUniform = gl.getUniformLocation(glProgram, "colorDifuso");
+        gl.uniform3f(colorDifusoUniform, this.colorObjeto[0], this.colorObjeto[1], this.colorObjeto[2]);
 
         gl.uniformMatrix4fv(modelMatrixUniform, false, this.matrizModelado);
         gl.uniformMatrix4fv(normalMatrixUniform, false, this.matrizNormal);
@@ -165,6 +169,10 @@ class Objeto3D {
 
     setMatrizModelado(matrizModelado) {
         this.matrizModelado = matrizModelado;
+    }
+
+    setColor(color) {
+        this.colorObjeto = color;
     }
 
     getMatrizModelado() {

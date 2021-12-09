@@ -196,7 +196,7 @@ function BloqueNucleo() {
         
         var n=vec3.create();
         vec3.cross(n,v1,v2);
-        //vec3.scale(n,n,-1);
+        vec3.scale(n,n,-1);
         return n;
     }
 
@@ -447,7 +447,7 @@ function Esfera(radio){
         
         var n=vec3.create();
         vec3.cross(n,v1,v2);
-        vec3.scale(n,n,-1);
+        //vec3.scale(n,n,-1);
         return n;
     }
 

@@ -60,11 +60,13 @@
             varying vec3 vNormal;
             varying vec3 vPosWorld;
 
+            uniform vec3 colorDifuso;
+
             void main(void) {
 
                 vec3 lightVec=normalize(vec3(0.0,3.0,5.0)-vPosWorld);
                 vec3 diffColor=mix(vec3(0.7,0.7,0.7),vNormal,0.4);
-                vec3 color=dot(lightVec,vNormal)*diffColor+vec3(0.2,0.2,0.2);
+                vec3 color=dot(lightVec,vNormal)*colorDifuso;
 
                gl_FragColor = vec4(color,1.0);
             }
@@ -320,7 +322,6 @@
             
             function drawScene(){
                 camara1.update();
-                //viewMatrix = camara1.getMatrix();
                 setupVertexShaderMatrix();
 
                 var barridoModulo = Math.PI/cantidadModulos;
@@ -336,10 +337,12 @@
                 objetoAnillo = new Objeto3D;
                 objetoAnillo.setearBuffers(anillo,45,10);
                 objetoAnillo.setRotacion(0,0,1,rotate_angle);
+                objetoAnillo.setColor([0.91,0.83,0.72]);
 
                 centroAnillo = new Tubo(0.45,0.05, true);
                 objetoCentroAnillo = new Objeto3D;
                 objetoCentroAnillo.setRotacion(1,0,0,Math.PI/2);
+                objetoCentroAnillo.setColor([1,1,0.5]);
                 objetoCentroAnillo.setearBuffers(centroAnillo, 20, 20);
 
                 objetoAnillo.agregarHijo(objetoCentroAnillo);
@@ -355,15 +358,18 @@
                     var fase = 2*i*barridoModulo;
                     objetoModulo.setRotacion(0,0,1,fase);
                     objetoModulo.setearBuffers(modulo, 20, 4);
+                    objetoModulo.setColor([0.67,0.84,0.90]);
                     objetoAndamio_1 = new Objeto3D;
                     objetoAndamio_1.setPosicion(0,radioAnillo/2,0);
                     objetoConector.setRotacion(0,0,1,(Math.PI-barridoModulo)/2 + fase);
+                    objetoAndamio_1.setColor([0.96,0.96,0.86]);
                     objetoAndamio_1.setearBuffers(andamio,10,10);
                     objetoConector.agregarHijo(objetoAndamio_1);
                     
                     objetoAndamio_2 = new Objeto3D;
                     objetoAndamio_2.setearBuffers(andamio,10,10);
                     objetoAndamio_2.setPosicion(0.075,radioAnillo/2,0);
+                    objetoAndamio_2.setColor([0.96,0.96,0.86]);
                     objetoConector.agregarHijo(objetoAndamio_2);
 
                     objetoAnillo.agregarHijo(objetoConector);
@@ -376,25 +382,27 @@
                 objetoBloqueNucleo_1 = new Objeto3D;
                 objetoBloqueNucleo_1.setEscala(0.07,0.07,0.07);
                 objetoBloqueNucleo_1.setPosicion(-0.875,0,0);
-                //objetoBloqueNucleo_1.setRotacion(0,1,0,Math.PI/2);
+                objetoBloqueNucleo_1.setColor([1,0,1]);
                 objetoBloqueNucleo_1.setearBuffers(bloqueNucleo, 30, 30);
                 objetoNucleo.agregarHijo(objetoBloqueNucleo_1);
                 objetoBloqueNucleo_2 = new Objeto3D;
                 objetoBloqueNucleo_2.setEscala(0.07,0.07,0.07);
                 objetoBloqueNucleo_2.setPosicion(0.65,0,0);
-                //objetoBloqueNucleo_1.setRotacion(0,1,0,Math.PI/2);
+                objetoBloqueNucleo_2.setColor([1,0,1]);
                 objetoBloqueNucleo_2.setearBuffers(bloqueNucleo, 30, 30);
                 objetoNucleo.agregarHijo(objetoBloqueNucleo_2);
 
                 moduloNucleo_1 = new ModuloNucleo_1();
                 objetoPrimerModuloNucleo_1 = new Objeto3D;
                 objetoPrimerModuloNucleo_1.setEscala(1.5,1.5,1.5);
+                objetoPrimerModuloNucleo_1.setColor([0.91,0.83,0.72]);
                 objetoPrimerModuloNucleo_1.setearBuffers(moduloNucleo_1, 20, 20);
                 objetoNucleo.agregarHijo(objetoPrimerModuloNucleo_1);
 
                 objetoSegundoModuloNucleo_1 = new Objeto3D;
                 objetoSegundoModuloNucleo_1.setEscala(1.5,1.5,1.5);
                 objetoSegundoModuloNucleo_1.setPosicion(-1.530,0,0);
+                objetoSegundoModuloNucleo_1.setColor([0.91,0.83,0.72]);
                 objetoSegundoModuloNucleo_1.setearBuffers(moduloNucleo_1, 20, 20);
                 objetoNucleo.agregarHijo(objetoSegundoModuloNucleo_1);
 
@@ -402,6 +410,7 @@
                 objetoModuloNucleo_2 = new Objeto3D;
                 objetoModuloNucleo_2.setPosicion(1.15,0,0);
                 objetoModuloNucleo_2.setEscala(1.3,1.3,1.3);
+                objetoModuloNucleo_2.setColor([0.91,0.83,0.72]);
                 objetoModuloNucleo_2.setearBuffers(moduloNucleo_2, 20, 20);
                 objetoNucleo.agregarHijo(objetoModuloNucleo_2);
 
@@ -409,6 +418,7 @@
                 objetoBarraCentral = new Objeto3D;
                 objetoBarraCentral.setRotacion(1,0,0,Math.PI/2);
                 objetoBarraCentral.setPosicion(0,0,largoBarraCentral/2);
+                objetoBarraCentral.setColor([0.91,0.83,0.72]);
                 objetoBarraCentral.setearBuffers(barraCentral, 20, 20);
 
 
@@ -424,9 +434,11 @@
                     objetoPrimerPanel = new Objeto3D;
                     objetoPrimerPanel.setPosicion(0.5,0,0);
                     objetoPrimerPanel.setRotacion(1,0,0,anguloPaneles);
+                    objetoPrimerPanel.setColor([0,0,0.10]);
                     objetoSegundoPanel = new Objeto3D;
                     objetoSegundoPanel.setPosicion(-0.5,0,0);
                     objetoSegundoPanel.setRotacion(1,0,0,anguloPaneles);
+                    objetoSegundoPanel.setColor([0,0,0.10]);
                     objetoUnionPaneles = new Objeto3D;
                     objetoUnionPaneles.setRotacion(0,0,1,Math.PI/2);
                     objetoPrimerPanel.setearBuffers(panel,3,3);
@@ -469,6 +481,7 @@
                 objetoCapsulaMenor.setEscala(0.5,0.5,0.5);
                 objetoCapsulaMenor.setPosicion(0.35,0,0);
                 objetoCapsulaMenor.setearBuffers(capsulaMenor, 25, 25);
+                objetoCapsulaMenor.setColor([1,0,0.52]);
                 objetoCapsula.agregarHijo(objetoCapsulaMenor);
 
                 /*var posCapsula = vec4.create(); 
@@ -488,6 +501,13 @@
                 }
                 
                 objetoEscena.agregarHijo(objetoCapsula);
+
+                tierra = new Esfera(200);
+                objetoTierra = new Objeto3D;
+                objetoTierra.setearBuffers(tierra, 75, 75);
+                objetoTierra.setPosicion(0,-220,0);
+                objetoTierra.setColor([0,0,1]);
+                objetoEscena.agregarHijo(objetoTierra);
 
                 
                 objetoEscena.dibujar(modelMatrix);
