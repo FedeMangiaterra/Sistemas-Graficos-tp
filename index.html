@@ -93,8 +93,6 @@
             trianglesIndexBuffer = null;
                
             var modelMatrix = mat4.create();
-            /*mat4.translate(modelMatrix, modelMatrix, [1,1,1]);
-            mat4.scale(modelMatrix, modelMatrix, [0.5,0.5,0.5]);*/
             var viewMatrix = mat4.create();
             var projMatrix = mat4.create();
             var normalMatrix = mat4.create();
@@ -106,7 +104,6 @@
             var radioAnillo = 3.5
             var velocidadRotacionAnillo = 0;
             var cantidadModulos = 8;
-            //var barridoModulo = Math.PI/cantidadModulos;
             var filasPaneles = 4;
             var anguloPaneles = Math.PI/4;
 
@@ -114,8 +111,21 @@
 
             var camara1 = new DroneCameraControl([-3,0,-5]);
 
+            var previousClientX = 0;
+            var previousClientY = 0;
+            var alfa = 0;
+            var beta = Math.PI/2;
+            var factorVelocidad = 0.01;
+
+            var isMouseDown = false;
+            var actualEvent;
+
+	        var mouse = {x: 0, y: 0};
+
+            var radioOrbital_1 = 2;
+
+            var radioOrbital_2 = 2;
             
-            //var largoBarraCentral = 2.25 + filasPaneles*0.8;
             
         //-----------------------------------------------------------------------------------------------------------------------------                                
 //----------------------------------------------------------------------------------------------------------------------------------------------
@@ -309,15 +319,11 @@
             }
 
             function setupVertexShaderMatrix(){
-                //var modelMatrixUniform = gl.getUniformLocation(glProgram, "modelMatrix");
                 var viewMatrixUniform  = gl.getUniformLocation(glProgram, "viewMatrix");
                 var projMatrixUniform  = gl.getUniformLocation(glProgram, "projMatrix");
-                //var normalMatrixUniform  = gl.getUniformLocation(glProgram, "normalMatrix");
 
-                //gl.uniformMatrix4fv(modelMatrixUniform, false, modelMatrix);
                 gl.uniformMatrix4fv(viewMatrixUniform, false, viewMatrix);
                 gl.uniformMatrix4fv(projMatrixUniform, false, projMatrix);
-                //gl.uniformMatrix4fv(normalMatrixUniform, false, normalMatrix);
             }                  
             
             function drawScene(){
@@ -461,14 +467,10 @@
                 objetoCapsula = new Objeto3D;
                 objetoCapsula.setMatrizModelado(camara1.getMatrix());
                 objetoCapsula.setRotacion(0,-1,0,Math.PI/2);
-                //objetoCapsula.setPosicion(0.5,0,0.5);
 
-                //camaraCapsula = new Esfera(0.12);
                 objetoCamaraCapsula = new Objeto3D;
-                //objetoCamaraCapsula.setearBuffers(camaraCapsula,20,20);
                 objetoCamaraCapsula.setMatrizModelado(camara1.getMatrix());
                 objetoCamaraCapsula.setPosicion(0,0.1,1);
-                //objetoCamaraCapsula.setRotacion(0,0,1,Math.PI/2);
                 objetoCapsula.agregarHijo(objetoCamaraCapsula);
 
                 capsulaMayor = new CapsulaMayor();
@@ -484,20 +486,20 @@
                 objetoCapsulaMenor.setColor([1,0,0.52]);
                 objetoCapsula.agregarHijo(objetoCapsulaMenor);
 
-                /*var posCapsula = vec4.create(); 
-                vec4.transformMat4(posCapsula, vec4.create(), objetoCapsula.getMatrizModelado());
-                var posCamaraCapsula = vec4.create();
-                vec4.transformMat4(posCamaraCapsula, vec4.create(), objetoCamaraCapsula.getMatrizModelado());
-                var posCamaraCapsula3 = [posCamaraCapsula[0], posCamaraCapsula[1], posCamaraCapsula[2]];
-                var posCapsula3 = [posCapsula[0], posCapsula[1], posCapsula[2]];*/
-
                 if (modoCamara == "capsula") {
                     var matrizModeladoCapsula = objetoCapsula.getMatrizModelado();
                     var matrizModeladoCamaraCapsula = objetoCamaraCapsula.getMatrizModelado();
                     var posCapsula3 = [matrizModeladoCapsula[12], matrizModeladoCapsula[13], matrizModeladoCapsula[14]];
                     var posCamaraCapsula3 = [matrizModeladoCamaraCapsula[12], matrizModeladoCamaraCapsula[13], matrizModeladoCamaraCapsula[14]];
                     mat4.lookAt(viewMatrix, posCamaraCapsula3, posCapsula3,  [0,0,-1]);
-                    //mat4.rotate(viewMatrix, viewMatrix, Math.PI/2, [0,0,1]);
+                } else if (modoCamara == "orbital_1") {
+                    if (isMouseDown) rotarCamaraOrbital();
+                    var posCamaraOrbital_1 = [radioOrbital_1 * Math.sin(alfa) * Math.sin(beta), radioOrbital_1 * Math.cos(beta) ,radioOrbital_1 * Math.cos(alfa) * Math.sin(beta)];
+                    mat4.lookAt(viewMatrix, posCamaraOrbital_1, [0,0,0],  [0,1,0]);
+                } else if (modoCamara == "orbital_2") {
+                    if (isMouseDown) rotarCamaraOrbital();
+                    var posCamaraOrbital_2 = [radioOrbital_2 * Math.sin(alfa) * Math.sin(beta) + 2, radioOrbital_2 * Math.cos(beta) ,radioOrbital_2 * Math.cos(alfa) * Math.sin(beta) + 2];
+                    mat4.lookAt(viewMatrix, posCamaraOrbital_2, [2,0,2],  [0,1,0]);
                 }
                 
                 objetoEscena.agregarHijo(objetoCapsula);
@@ -525,13 +527,6 @@
                 
                 rotate_angle += velocidadRotacionAnillo;
                 mat4.identity(modelMatrix);
-                //mat4.rotate(modelMatrix,modelMatrix, rotate_angle, [1.0, 0.0, 1.0]);
-
-                /*mat4.identity(normalMatrix);
-                mat4.multiply(normalMatrix,viewMatrix,modelMatrix);
-                mat4.invert(normalMatrix,normalMatrix);
-                mat4.transpose(normalMatrix,normalMatrix);*/
-
             }
             
             function tick(){
@@ -541,6 +536,36 @@
                 animate();
             }
 
+            function rotarCamaraOrbital() {
+                var deltaX=0;
+                var deltaY=0;
+
+                if (previousClientX) deltaX = mouse.x - previousClientX;
+                if (previousClientY) deltaY = mouse.y - previousClientY;
+
+                previousClientX = mouse.x;
+                previousClientY = mouse.y;
+
+                alfa = alfa + deltaX * factorVelocidad;
+                beta = beta + deltaY * factorVelocidad;
+
+		        if (beta<0) beta=0;
+		        if (beta>Math.PI) beta=Math.PI;
+            }
+
+            document.addEventListener("mousemove",function(e){ 
+		        mouse.x = e.clientX || e.pageX; 
+		        mouse.y = e.clientY || e.pageY;
+	        });
+	
+            document.addEventListener("mousedown",function(event){		
+                isMouseDown = true;        
+            });
+
+            document.addEventListener("mouseup",function(event){
+		        isMouseDown = false;		
+            });
+
             document.addEventListener("keydown",function(e){
 
                 switch ( e.key ) {
@@ -549,8 +574,21 @@
                         modoCamara = "default"; break;
                     case "1": 
                         modoCamara = "capsula"; break;
+                    case "2":
+                        modoCamara = "orbital_1"; break;
+                    case "3":
+                        modoCamara = "orbital_2"; break;
                 }
-            }) 
+            })
+            
+            document.addEventListener('wheel', function(e){
+                if (modoCamara == "orbital_1" && !(radioOrbital_1 <= 1.5 && e.deltaY < 0) && !(radioOrbital_1 >= 15 && e.deltaY > 0)) {
+                    radioOrbital_1 += e.deltaY/400;
+                } else if (modoCamara == "orbital_2" && !(radioOrbital_2 <= 1.5 && e.deltaY < 0) && !(radioOrbital_2 >= 15 && e.deltaY > 0)) {
+                    radioOrbital_2 += e.deltaY/400;
+                }
+                
+            });
 
             function initMenu(){
                 var gui = new dat.GUI();

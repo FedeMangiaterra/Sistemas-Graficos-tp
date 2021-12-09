@@ -104,29 +104,6 @@ function Modulo(radio,anguloBarrido) {
     }
 
     this.getNormal=function(alfa,beta,filasTotales,columnasTotales){
-        /*var recorrido = [[0,0,0],[0,1.3,0],[2,1.3,0],[2,0,0],[2,0,0],[2,-1.3,0],[0,-1.3,0],[0,0,0]];
-        var cant_curvas = recorrido.length / 4;
-        var u = beta * cant_curvas;
-        if (u >= 1*cant_curvas) {
-            u = 1*cant_curvas - 0.001;
-        }
-
-        var n = evaluarBezierCubica(u, recorrido);
-        var normal = vec3.fromValues(n[3][0],n[3][1],n[3][2]);
-        vec3.normalize(normal,normal);
-        //vec3.scale(normal,normal,-1);
-        var n = vec3.create();
-        vec3.rotateY(n,normal,normal,Math.PI/4);*/
-
-        /*verticeForma = alfa * columnasTotales;
-
-        if (verticeForma == 0 || verticeForma == 3 || verticeForma == 4) {
-            var normal = vec3.fromValues(0,0,1);
-            vec3.normalize(normal,normal);
-        } else {
-            var normal = vec3.fromValues(0,0,-1);
-            vec3.normalize(normal,normal);
-        }*/
 
         var p=this.getPosicion(alfa,beta,filasTotales,columnasTotales);
         var v=vec3.create();
@@ -149,8 +126,6 @@ function Modulo(radio,anguloBarrido) {
             vec3.scale(n,n,-1);
         }
         return n;
-        
-        //return normal;
     }
 
     this.getCoordenadasTextura=function(u,v){
@@ -312,7 +287,6 @@ function CapsulaMayor() {
         var puntoCurva = evaluarBezierCubica(u_curva,puntosdeControlForma);
         var forma = [puntoCurva[0]];
         var recorrido = [[-0.25,0,0],[-0.08,0,0],[0.08,0,0],[0.25,0,0]];
-        //var recorrido = [[0,-0.25,0],[0,-0.08,0],[0,0.08,0],[0,0.25,0]];
         var matrizTransformacion = mat4.create();
         if (v <= 0.8) {
             var escala = 0.4 + 0.6*Math.sin(Math.PI*v*0.5/0.8);
@@ -365,7 +339,6 @@ function CapsulaMenor() {
         var puntoCurva = evaluarBezierCubica(u_curva,puntosdeControlForma);
         var forma = [puntoCurva[0]];
         var recorrido = [[-0.25,0,0],[-0.08,0,0],[0.08,0,0],[0.25,0,0]];
-        //var recorrido = [[0,-0.25,0],[0,-0.08,0],[0,0.08,0],[0,0.25,0]];
         var matrizTransformacion = mat4.create();
         var escala = 0.3 + 0.7*Math.sin(Math.PI*v*0.5);
         mat4.scale(matrizTransformacion, matrizTransformacion, [escala, escala, escala]);
