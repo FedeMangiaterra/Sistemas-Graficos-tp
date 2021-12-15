@@ -61,9 +61,11 @@ class Objeto3D {
         this.escala = [1,1,1];
         this.hijos = [];
         this.colorObjeto = [1,1,1];
+        this.matrizActualizada = false;
     }
 
     actualizarMatrizModelado() {
+        if (this.matrizActualizada) return;
         if (this.posicion != [0,0,0]) { 
             mat4.translate(this.matrizModelado, this.matrizModelado, this.posicion);
         }
@@ -77,6 +79,7 @@ class Objeto3D {
         mat4.multiply(this.matrizNormal,mat4.create(),this.matrizModelado);
         mat4.invert(this.matrizNormal,this.matrizNormal);
         mat4.transpose(this.matrizNormal,this.matrizNormal);
+        this.matrizActualizada = true;
     }
 
     setupVertexShaderMatrix(){
@@ -158,6 +161,10 @@ class Objeto3D {
         this.posicion = [x,y,z];
     }
 
+    getPosicion() {
+        return this.posicion;
+    }
+
     setRotacion(x,y,z,angulo) {
         this.rotacion = [x,y,z];
         this.angulo = angulo;
@@ -175,8 +182,13 @@ class Objeto3D {
         this.colorObjeto = color;
     }
 
-    getMatrizModelado() {
-        var m=mat4.clone(this.matrizModelado);
+    getMatrizModelado(matrizPadre) {
+        this.actualizarMatrizModelado();
+        var m = mat4.create();
+        mat4.multiply(m, matrizPadre, this.matrizModelado);
+        return m;
+        /*var m=mat4.clone(this.matrizModelado);
+        if (this.matrizActualizada) return m;
         if (this.posicion != [0,0,0]) { 
             mat4.translate(m, m, this.posicion);
         }
@@ -186,7 +198,7 @@ class Objeto3D {
         if (this.escala != [1,1,1]) {
             mat4.scale(m, m, this.escala);
         }
-        return m;
+        return m;*/
     }
 
     getMatrizVista() {
