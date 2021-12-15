@@ -178,6 +178,10 @@
             
         }
 
+        this.getzRotVel=function(){
+            return camState.zRotVel;
+        }
+
 
         this.getViewMatrix=function(){
 

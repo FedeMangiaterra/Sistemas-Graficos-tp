@@ -125,6 +125,8 @@
             var radioOrbital_1 = 2;
 
             var radioOrbital_2 = 2;
+
+            var upVector = [0,1,0];
             
             
         //-----------------------------------------------------------------------------------------------------------------------------                                
@@ -468,12 +470,12 @@
                 objetoCapsula.setMatrizModelado(camara1.getMatrix());
                 objetoCapsula.setRotacion(0,-1,0,Math.PI/2);
 
-                camaraCapsula = new Tubo(0.1,0.5);
+                //camaraCapsula = new Tubo(0.1,0.5);
                 objetoCamaraCapsula = new Objeto3D;
                 //objetoCamaraCapsula.setMatrizModelado(camara1.getMatrix());
                 //objetoCamaraCapsula.setPosicion(0,0.1,1);
                 objetoCamaraCapsula.setPosicion(1,0.1,0);
-                objetoCamaraCapsula.setearBuffers(camaraCapsula,10,10);
+                //objetoCamaraCapsula.setearBuffers(camaraCapsula,10,10);
                 objetoCapsula.agregarHijo(objetoCamaraCapsula);
 
                 capsulaMayor = new CapsulaMayor();
@@ -494,7 +496,11 @@
                     var matrizModeladoCamaraCapsula = objetoCamaraCapsula.getMatrizModelado(matrizModeladoCapsula);
                     var posCapsula3 = [matrizModeladoCapsula[12], matrizModeladoCapsula[13], matrizModeladoCapsula[14]];
                     var posCamaraCapsula3 = [matrizModeladoCamaraCapsula[12], matrizModeladoCamaraCapsula[13], matrizModeladoCamaraCapsula[14]];
-                    mat4.lookAt(viewMatrix, posCamaraCapsula3, posCapsula3,  [0,1,0]);
+                    var vectorUp = upVector;
+                    console.log(camara1.getzRotVel());
+                    vec3.rotateZ(vectorUp, upVector, posCamaraCapsula3, camara1.getzRotVel());
+                    console.log(vectorUp);
+                    mat4.lookAt(viewMatrix, posCamaraCapsula3, posCapsula3,  vectorUp);
                 } else if (modoCamara == "orbital_1") {
                     if (isMouseDown) rotarCamaraOrbital();
                     if (!isMouseDown) previousClientX = 0, previousClientY = 0;
