@@ -36,10 +36,13 @@
 
             attribute vec3 aVertexPosition;
             attribute vec3 aVertexNormal;
+            attribute vec2 aTextureCoord;
 
             uniform mat4 modelMatrix;            
             uniform mat4 viewMatrix;
             uniform mat4 projMatrix;
+
+            varying highp vec2 vTextureCoord;
 
             uniform mat4 normalMatrix;
 
@@ -48,6 +51,7 @@
 
             void main(void) {
                 gl_Position = projMatrix * viewMatrix * modelMatrix * vec4(aVertexPosition, 1.0);
+                vTextureCoord = aTextureCoord;
 
                 vPosWorld=(modelMatrix*vec4(aVertexPosition,1.0)).xyz;    //la posicion en coordenadas de mundo
                 vNormal=(normalMatrix*vec4(aVertexNormal,1.0)).xyz;       //la normal en coordenadas de mundo                
@@ -60,6 +64,10 @@
             varying vec3 vNormal;
             varying vec3 vPosWorld;
 
+            varying highp vec2 vTextureCoord;
+
+            uniform sampler2D uSampler;
+
             uniform vec3 colorDifuso;
 
             void main(void) {
@@ -68,7 +76,8 @@
                 vec3 diffColor=mix(vec3(0.7,0.7,0.7),vNormal,0.4);
                 vec3 color=dot(lightVec,vNormal)*colorDifuso;
 
-               gl_FragColor = vec4(color,1.0);
+               //gl_FragColor = vec4(color,1.0);
+               gl_FragColor = texture2D(uSampler, vTextureCoord);
             }
         </script>
         
@@ -106,6 +115,7 @@
             var cantidadModulos = 8;
             var filasPaneles = 4;
             var anguloPaneles = Math.PI/4;
+            var anguloRotacionTierra = 0;
 
             var modoCamara = "default";
 
@@ -127,6 +137,8 @@
             var radioOrbital_2 = 2;
 
             var upVector = [0,1,0];
+
+            var url_texturas = ["maps/modulo.jpg", "maps/modulo-cilindrico.jpg", "maps/modulo-esferico.jpg", "maps/paneles_solares.jpg", "maps/shiphull.jpg", "maps/tierra.jpg"];
             
             
         //-----------------------------------------------------------------------------------------------------------------------------                                
@@ -149,9 +161,10 @@
                     initShaders();
                     setupBuffers();
                     setupVertexShaderMatrix();
-                    //drawScene();
                     initMenu();
-                    tick();   
+                    loadTextures(gl, url_texturas, tick);
+                    //drawScene();
+                    //tick(texturas);   
 
                 }else{    
                     alert(  "Error: Your browser does not appear to support WebGL.");
@@ -328,7 +341,7 @@
                 gl.uniformMatrix4fv(projMatrixUniform, false, projMatrix);
             }                  
             
-            function drawScene(){
+            function drawScene(texturas){
                 camara1.update();
                 setupVertexShaderMatrix();
 
@@ -343,12 +356,14 @@
 
                 anillo = new Anillo(radioAnillo);
                 objetoAnillo = new Objeto3D;
+                objetoAnillo.setearTextura(texturas[0], 0);
                 objetoAnillo.setearBuffers(anillo,45,10);
                 objetoAnillo.setRotacion(0,0,1,rotate_angle);
                 objetoAnillo.setColor([0.91,0.83,0.72]);
 
                 centroAnillo = new Tubo(0.45,0.05, true);
                 objetoCentroAnillo = new Objeto3D;
+                objetoCentroAnillo.setearTextura(texturas[0], 0);
                 objetoCentroAnillo.setRotacion(1,0,0,Math.PI/2);
                 objetoCentroAnillo.setColor([1,1,0.5]);
                 objetoCentroAnillo.setearBuffers(centroAnillo, 20, 20);
@@ -362,12 +377,14 @@
 
                 for (i = 0; i < cantidadModulos; i++) {
                     objetoModulo = new Objeto3D;
+                    objetoModulo.setearTextura(texturas[0], 0);
                     objetoConector = new Objeto3D;
                     var fase = 2*i*barridoModulo;
                     objetoModulo.setRotacion(0,0,1,fase);
                     objetoModulo.setearBuffers(modulo, 20, 4);
                     objetoModulo.setColor([0.67,0.84,0.90]);
                     objetoAndamio_1 = new Objeto3D;
+                    objetoAndamio_1.setearTextura(texturas[0], 0);
                     objetoAndamio_1.setPosicion(0,radioAnillo/2,0);
                     objetoConector.setRotacion(0,0,1,(Math.PI-barridoModulo)/2 + fase);
                     objetoAndamio_1.setColor([0.96,0.96,0.86]);
@@ -375,6 +392,7 @@
                     objetoConector.agregarHijo(objetoAndamio_1);
                     
                     objetoAndamio_2 = new Objeto3D;
+                    objetoAndamio_2.setearTextura(texturas[0], 0);
                     objetoAndamio_2.setearBuffers(andamio,10,10);
                     objetoAndamio_2.setPosicion(0.075,radioAnillo/2,0);
                     objetoAndamio_2.setColor([0.96,0.96,0.86]);
@@ -388,12 +406,14 @@
 
                 bloqueNucleo = new BloqueNucleo();
                 objetoBloqueNucleo_1 = new Objeto3D;
+                objetoBloqueNucleo_1.setearTextura(texturas[0], 0);
                 objetoBloqueNucleo_1.setEscala(0.07,0.07,0.07);
                 objetoBloqueNucleo_1.setPosicion(-0.875,0,0);
                 objetoBloqueNucleo_1.setColor([1,0,1]);
                 objetoBloqueNucleo_1.setearBuffers(bloqueNucleo, 30, 30);
                 objetoNucleo.agregarHijo(objetoBloqueNucleo_1);
                 objetoBloqueNucleo_2 = new Objeto3D;
+                objetoBloqueNucleo_2.setearTextura(texturas[0], 0);
                 objetoBloqueNucleo_2.setEscala(0.07,0.07,0.07);
                 objetoBloqueNucleo_2.setPosicion(0.65,0,0);
                 objetoBloqueNucleo_2.setColor([1,0,1]);
@@ -402,12 +422,16 @@
 
                 moduloNucleo_1 = new ModuloNucleo_1();
                 objetoPrimerModuloNucleo_1 = new Objeto3D;
+                objetoPrimerModuloNucleo_1.setearTextura(texturas[1], 1);
+                //objetoPrimerModuloNucleo_1.setearTextura(texturas[0], 0);
                 objetoPrimerModuloNucleo_1.setEscala(1.5,1.5,1.5);
                 objetoPrimerModuloNucleo_1.setColor([0.91,0.83,0.72]);
                 objetoPrimerModuloNucleo_1.setearBuffers(moduloNucleo_1, 20, 20);
                 objetoNucleo.agregarHijo(objetoPrimerModuloNucleo_1);
 
                 objetoSegundoModuloNucleo_1 = new Objeto3D;
+                objetoSegundoModuloNucleo_1.setearTextura(texturas[1], 1);
+                //objetoSegundoModuloNucleo_1.setearTextura(texturas[0], 0);
                 objetoSegundoModuloNucleo_1.setEscala(1.5,1.5,1.5);
                 objetoSegundoModuloNucleo_1.setPosicion(-1.530,0,0);
                 objetoSegundoModuloNucleo_1.setColor([0.91,0.83,0.72]);
@@ -416,6 +440,8 @@
 
                 moduloNucleo_2 = new ModuloNucleo_2();
                 objetoModuloNucleo_2 = new Objeto3D;
+                objetoModuloNucleo_2.setearTextura(texturas[2], 2);
+                //objetoModuloNucleo_2.setearTextura(texturas[0], 0);
                 objetoModuloNucleo_2.setPosicion(1.15,0,0);
                 objetoModuloNucleo_2.setEscala(1.3,1.3,1.3);
                 objetoModuloNucleo_2.setColor([0.91,0.83,0.72]);
@@ -424,6 +450,8 @@
 
                 barraCentral = new Tubo(0.075, largoBarraCentral, true);
                 objetoBarraCentral = new Objeto3D;
+                objetoBarraCentral.setearTextura(texturas[4], 4);
+                //objetoBarraCentral.setearTextura(texturas[0], 0);
                 objetoBarraCentral.setRotacion(1,0,0,Math.PI/2);
                 objetoBarraCentral.setPosicion(0,0,largoBarraCentral/2);
                 objetoBarraCentral.setColor([0.91,0.83,0.72]);
@@ -440,14 +468,19 @@
                     objetoPanelDoble.setEscala(2,2,2);
                 
                     objetoPrimerPanel = new Objeto3D;
+                    objetoPrimerPanel.setearTextura(texturas[3], 3);
+                    //objetoPrimerPanel.setearTextura(texturas[0], 0);
                     objetoPrimerPanel.setPosicion(0.5,0,0);
                     objetoPrimerPanel.setRotacion(1,0,0,anguloPaneles);
                     objetoPrimerPanel.setColor([0,0,0.10]);
                     objetoSegundoPanel = new Objeto3D;
+                    objetoPrimerPanel.setearTextura(texturas[3], 3);
+                    //objetoPrimerPanel.setearTextura(texturas[0], 0);
                     objetoSegundoPanel.setPosicion(-0.5,0,0);
                     objetoSegundoPanel.setRotacion(1,0,0,anguloPaneles);
                     objetoSegundoPanel.setColor([0,0,0.10]);
                     objetoUnionPaneles = new Objeto3D;
+                    objetoUnionPaneles.setearTextura(texturas[0], 0);
                     objetoUnionPaneles.setRotacion(0,0,1,Math.PI/2);
                     objetoPrimerPanel.setearBuffers(panel,3,3);
                     objetoSegundoPanel.setearBuffers(panel,3,3);
@@ -480,11 +513,15 @@
 
                 capsulaMayor = new CapsulaMayor();
                 objetoCapsulaMayor = new Objeto3D;
+                objetoCapsulaMayor.setearTextura(texturas[4], 4);
+                //objetoCapsulaMayor.setearTextura(texturas[0], 0);
                 objetoCapsulaMayor.setearBuffers(capsulaMayor, 25, 25);
                 objetoCapsula.agregarHijo(objetoCapsulaMayor);
 
                 capsulaMenor = new CapsulaMenor();
                 objetoCapsulaMenor = new Objeto3D;
+                objetoCapsulaMenor.setearTextura(texturas[4], 4);
+                //objetoCapsulaMenor.setearTextura(texturas[0], 0);
                 objetoCapsulaMenor.setEscala(0.5,0.5,0.5);
                 objetoCapsulaMenor.setPosicion(0.35,0,0);
                 objetoCapsulaMenor.setearBuffers(capsulaMenor, 25, 25);
@@ -497,10 +534,8 @@
                     var posCapsula3 = [matrizModeladoCapsula[12], matrizModeladoCapsula[13], matrizModeladoCapsula[14]];
                     var posCamaraCapsula3 = [matrizModeladoCamaraCapsula[12], matrizModeladoCamaraCapsula[13], matrizModeladoCamaraCapsula[14]];
                     var vectorUp = upVector;
-                    console.log(camara1.getzRotVel());
                     vec3.rotateZ(vectorUp, upVector, posCamaraCapsula3, camara1.getzRotVel());
-                    console.log(vectorUp);
-                    mat4.lookAt(viewMatrix, posCamaraCapsula3, posCapsula3,  vectorUp);
+                    mat4.lookAt(viewMatrix, posCamaraCapsula3, posCapsula3, vectorUp);
                 } else if (modoCamara == "orbital_1") {
                     if (isMouseDown) rotarCamaraOrbital();
                     if (!isMouseDown) previousClientX = 0, previousClientY = 0;
@@ -517,11 +552,13 @@
 
                 tierra = new Esfera(200);
                 objetoTierra = new Objeto3D;
+                objetoTierra.setearTextura(texturas[5], 5);
+                //objetoTierra.setearTextura(texturas[0], 0);
                 objetoTierra.setearBuffers(tierra, 75, 75);
                 objetoTierra.setPosicion(0,-220,0);
+                objetoTierra.setRotacion(-1,0,-1,anguloRotacionTierra);
                 objetoTierra.setColor([0,0,1]);
                 objetoEscena.agregarHijo(objetoTierra);
-
                 
                 objetoEscena.dibujar(modelMatrix);
                
@@ -537,13 +574,14 @@
             function animate(){
                 
                 rotate_angle += velocidadRotacionAnillo;
+                anguloRotacionTierra += 0.002;
                 mat4.identity(modelMatrix);
             }
             
-            function tick(){
+            function tick(texturas){
 
                 requestAnimationFrame(tick);
-                drawScene();
+                drawScene(texturas);
                 animate();
             }
 

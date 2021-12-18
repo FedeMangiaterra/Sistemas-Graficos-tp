@@ -1,3 +1,5 @@
+
+
 function crearMatrizNivel(vectores) {
 
     matrizNivel = mat4.fromValues(
@@ -57,8 +59,46 @@ function Anillo(radio) {
 
     }
 
-    this.getNormal=function(alfa,beta,filasTotales,columnasTotales){
+    this.normal=function(alfa,beta,filasTotales,columnasTotales){
 
+        var p=this.getPosicion(alfa,beta,filasTotales,columnasTotales);
+        var v=vec3.create();
+        vec3.normalize(v,p);
+    
+        var delta=0.001;
+        var p1=this.getPosicion(alfa,beta,filasTotales,columnasTotales);
+        var p2=this.getPosicion(alfa,beta+delta,filasTotales,columnasTotales);
+        var p3=this.getPosicion(alfa+delta,beta,filasTotales,columnasTotales);
+    
+        var v1=vec3.fromValues(p2[0]-p1[0],p2[1]-p1[1],p2[2]-p1[2]);
+        var v2=vec3.fromValues(p3[0]-p1[0],p3[1]-p1[1],p3[2]-p1[2]);
+    
+        vec3.normalize(v1,v1);
+        vec3.normalize(v2,v2);
+        
+        var n=vec3.create();
+        vec3.cross(n,v1,v2);
+    
+        return n;
+    }
+    
+    this.normalInterpolada=function(alfa,beta,filasTotales,columnasTotales) {
+        var delta = 0.002;
+        var normal_1 = this.normal(alfa + delta, beta, filasTotales, columnasTotales);
+        var normal_2 = this.normal(alfa - delta, beta, filasTotales, columnasTotales);
+        var normal_3 = this.normal(alfa, beta + delta, filasTotales, columnasTotales);
+        var normal_4 = this.normal(alfa, beta - delta, filasTotales, columnasTotales);
+    
+        var normal = vec3.create();
+        normal[0] = (normal_1[0] + normal_2[0] + normal_3[0] + normal_4[0]) / 4;
+        normal[1] = (normal_1[1] + normal_2[1] + normal_3[1] + normal_4[1]) / 4;
+        normal[2] = (normal_1[2] + normal_2[2] + normal_3[2] + normal_4[2]) / 4;
+    
+        return normal;
+    }
+
+    this.getNormal=function(alfa,beta,filasTotales,columnasTotales){
+        //return this.normalInterpolada(alfa,beta,filasTotales,columnasTotales);
         var p=this.getPosicion(alfa,beta,filasTotales,columnasTotales);
         var v=vec3.create();
         vec3.normalize(v,p);
@@ -76,7 +116,9 @@ function Anillo(radio) {
         
         var n=vec3.create();
         vec3.cross(n,v1,v2);
-        //vec3.scale(n,n,-1);
+        if (!(alfa > 0.25 && alfa < 0.75)) {
+            vec3.scale(n,n,-1);
+        }
         return n;
     }
 
@@ -104,8 +146,27 @@ function Modulo(radio,anguloBarrido) {
     }
 
     this.getNormal=function(alfa,beta,filasTotales,columnasTotales){
+        
+        verticeForma = alfa * columnasTotales;
+        var recorrido = [[-radio,0,0],[-radio,1.33*radio,0],[radio,1.33*radio,0],[radio,0,0],[radio,0,0],[radio,-1.33*radio,0],[-radio,-1.33*radio,0],[-radio,0,0]];
+        var fraccionRecorrida = anguloBarrido / (2*Math.PI)
+        nivel = beta * fraccionRecorrida;
 
-        var p=this.getPosicion(alfa,beta,filasTotales,columnasTotales);
+        var cant_curvas = recorrido.length / 4;
+        var u = nivel * cant_curvas;
+        if (u >= 1*cant_curvas) {
+            u = 1*cant_curvas;
+        }
+        n = evaluarBezierCubica(u, recorrido)[3];
+        var normal = vec3.create();
+        normal[0] = n[0] / 2;
+        normal[1] = n[1] / 2;
+        normal[2] = (n[2] + 1) / 2;
+        vec3.normalize(normal,normal);
+        //vec3.scale(normal,normal,-1);
+        return normal;
+
+        /*var p=this.getPosicion(alfa,beta,filasTotales,columnasTotales);
         var v=vec3.create();
         vec3.normalize(v,p);
 
@@ -125,7 +186,7 @@ function Modulo(radio,anguloBarrido) {
         if (alfa >= 0.5 && alfa < 0.75) {
             vec3.scale(n,n,-1);
         }
-        return n;
+        return n;*/
     }
 
     this.getCoordenadasTextura=function(u,v){

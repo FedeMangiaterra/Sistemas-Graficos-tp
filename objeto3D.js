@@ -1,3 +1,59 @@
+function loadTextures(gl, textures, callback) {
+    var texturas = [];
+    var imagenes_a_cargar = textures.length;
+    var alCargarImagen = function() {
+        --imagenes_a_cargar;
+        // If all the images are loaded call the callback.
+        if (imagenes_a_cargar == 0) {
+          callback(texturas);
+        }
+      };
+    for (i = 0; i < textures.length; i++) {
+        var textura = loadTexture(gl, textures[i], alCargarImagen);
+        texturas.push(textura);
+    }
+}
+
+function loadTexture(gl, url, callback) {
+    var texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+  
+    const level = 0;
+    const internalFormat = gl.RGBA;
+    const width = 1;
+    const height = 1;
+    const border = 0;
+    const srcFormat = gl.RGBA;
+    const srcType = gl.UNSIGNED_BYTE;
+    const pixel = new Uint8Array([0, 0, 255, 255]);  // opaque blue
+    gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
+                  width, height, border, srcFormat, srcType,
+                  pixel);
+  
+    const image = new Image();
+    image.src = url;
+    image.onload = function() {
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
+                    srcFormat, srcType, image);
+  
+      if (isPowerOf2(image.width) && isPowerOf2(image.height)) {
+         gl.generateMipmap(gl.TEXTURE_2D);
+      } else {
+         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      }
+      callback();
+    };
+  
+    return texture;
+  }
+  
+  function isPowerOf2(value) {
+    return (value & (value - 1)) == 0;
+  }
+
 function indice(fila, columna, verticesPorFila){
     return fila*verticesPorFila + columna;
 }
@@ -62,6 +118,13 @@ class Objeto3D {
         this.hijos = [];
         this.colorObjeto = [1,1,1];
         this.matrizActualizada = false;
+        this.texture = null;
+        this.indiceTextura = 0;
+    }
+
+    setearTextura(texture, indice) {
+        this.texture = texture;
+        this.indiceTextura = indice;
     }
 
     actualizarMatrizModelado() {
@@ -90,7 +153,7 @@ class Objeto3D {
         gl.uniform3f(colorDifusoUniform, this.colorObjeto[0], this.colorObjeto[1], this.colorObjeto[2]);
 
         gl.uniformMatrix4fv(modelMatrixUniform, false, this.matrizModelado);
-        gl.uniformMatrix4fv(normalMatrixUniform, false, this.matrizNormal);
+        gl.uniformMatrix4fv(normalMatrixUniform, false, normalMatrix);
     }       
 
     setearBuffers(superficie, filas, columnas) {
@@ -144,6 +207,19 @@ class Objeto3D {
             gl.enableVertexAttribArray(vertexNormalAttribute);
             gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
             gl.vertexAttribPointer(vertexNormalAttribute, 3, gl.FLOAT, false, 0, 0);
+
+            if (this.texture) {
+                var uSampler = gl.getUniformLocation(glProgram, 'uSampler');
+                var vertexTextureAttribute = gl.getAttribLocation(glProgram, "aTextureCoord");
+                gl.enableVertexAttribArray(vertexTextureAttribute);
+                gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
+                gl.vertexAttribPointer(vertexTextureAttribute, 2, gl.FLOAT, false, 0, 0);
+
+                gl.activeTexture(gl.TEXTURE0+this.indiceTextura);
+
+                gl.bindTexture(gl.TEXTURE_2D, this.texture);
+                gl.uniform1i(uSampler, this.indiceTextura);
+            }
             
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
             gl.drawElements(gl.TRIANGLE_STRIP, this.indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
