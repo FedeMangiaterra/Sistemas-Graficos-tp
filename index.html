@@ -356,7 +356,7 @@
 
                 anillo = new Anillo(radioAnillo);
                 objetoAnillo = new Objeto3D;
-                objetoAnillo.setearTextura(texturas[0], 0);
+                objetoAnillo.setearTextura(texturas[4], 4);
                 objetoAnillo.setearBuffers(anillo,45,10);
                 objetoAnillo.setRotacion(0,0,1,rotate_angle);
                 objetoAnillo.setColor([0.91,0.83,0.72]);
@@ -406,14 +406,14 @@
 
                 bloqueNucleo = new BloqueNucleo();
                 objetoBloqueNucleo_1 = new Objeto3D;
-                objetoBloqueNucleo_1.setearTextura(texturas[0], 0);
+                objetoBloqueNucleo_1.setearTextura(texturas[4], 4);
                 objetoBloqueNucleo_1.setEscala(0.07,0.07,0.07);
                 objetoBloqueNucleo_1.setPosicion(-0.875,0,0);
                 objetoBloqueNucleo_1.setColor([1,0,1]);
                 objetoBloqueNucleo_1.setearBuffers(bloqueNucleo, 30, 30);
                 objetoNucleo.agregarHijo(objetoBloqueNucleo_1);
                 objetoBloqueNucleo_2 = new Objeto3D;
-                objetoBloqueNucleo_2.setearTextura(texturas[0], 0);
+                objetoBloqueNucleo_2.setearTextura(texturas[4], 4);
                 objetoBloqueNucleo_2.setEscala(0.07,0.07,0.07);
                 objetoBloqueNucleo_2.setPosicion(0.65,0,0);
                 objetoBloqueNucleo_2.setColor([1,0,1]);
@@ -423,7 +423,6 @@
                 moduloNucleo_1 = new ModuloNucleo_1();
                 objetoPrimerModuloNucleo_1 = new Objeto3D;
                 objetoPrimerModuloNucleo_1.setearTextura(texturas[1], 1);
-                //objetoPrimerModuloNucleo_1.setearTextura(texturas[0], 0);
                 objetoPrimerModuloNucleo_1.setEscala(1.5,1.5,1.5);
                 objetoPrimerModuloNucleo_1.setColor([0.91,0.83,0.72]);
                 objetoPrimerModuloNucleo_1.setearBuffers(moduloNucleo_1, 20, 20);
@@ -431,7 +430,6 @@
 
                 objetoSegundoModuloNucleo_1 = new Objeto3D;
                 objetoSegundoModuloNucleo_1.setearTextura(texturas[1], 1);
-                //objetoSegundoModuloNucleo_1.setearTextura(texturas[0], 0);
                 objetoSegundoModuloNucleo_1.setEscala(1.5,1.5,1.5);
                 objetoSegundoModuloNucleo_1.setPosicion(-1.530,0,0);
                 objetoSegundoModuloNucleo_1.setColor([0.91,0.83,0.72]);
@@ -441,7 +439,6 @@
                 moduloNucleo_2 = new ModuloNucleo_2();
                 objetoModuloNucleo_2 = new Objeto3D;
                 objetoModuloNucleo_2.setearTextura(texturas[2], 2);
-                //objetoModuloNucleo_2.setearTextura(texturas[0], 0);
                 objetoModuloNucleo_2.setPosicion(1.15,0,0);
                 objetoModuloNucleo_2.setEscala(1.3,1.3,1.3);
                 objetoModuloNucleo_2.setColor([0.91,0.83,0.72]);
@@ -451,7 +448,6 @@
                 barraCentral = new Tubo(0.075, largoBarraCentral, true);
                 objetoBarraCentral = new Objeto3D;
                 objetoBarraCentral.setearTextura(texturas[4], 4);
-                //objetoBarraCentral.setearTextura(texturas[0], 0);
                 objetoBarraCentral.setRotacion(1,0,0,Math.PI/2);
                 objetoBarraCentral.setPosicion(0,0,largoBarraCentral/2);
                 objetoBarraCentral.setColor([0.91,0.83,0.72]);
@@ -469,21 +465,19 @@
                 
                     objetoPrimerPanel = new Objeto3D;
                     objetoPrimerPanel.setearTextura(texturas[3], 3);
-                    //objetoPrimerPanel.setearTextura(texturas[0], 0);
                     objetoPrimerPanel.setPosicion(0.5,0,0);
                     objetoPrimerPanel.setRotacion(1,0,0,anguloPaneles);
                     objetoPrimerPanel.setColor([0,0,0.10]);
                     objetoSegundoPanel = new Objeto3D;
-                    objetoPrimerPanel.setearTextura(texturas[3], 3);
-                    //objetoPrimerPanel.setearTextura(texturas[0], 0);
+                    objetoSegundoPanel.setearTextura(texturas[3], 3);
                     objetoSegundoPanel.setPosicion(-0.5,0,0);
                     objetoSegundoPanel.setRotacion(1,0,0,anguloPaneles);
                     objetoSegundoPanel.setColor([0,0,0.10]);
                     objetoUnionPaneles = new Objeto3D;
                     objetoUnionPaneles.setearTextura(texturas[0], 0);
                     objetoUnionPaneles.setRotacion(0,0,1,Math.PI/2);
-                    objetoPrimerPanel.setearBuffers(panel,3,3);
-                    objetoSegundoPanel.setearBuffers(panel,3,3);
+                    objetoPrimerPanel.setearBuffers(panel,5,5);
+                    objetoSegundoPanel.setearBuffers(panel,5,5);
                     objetoUnionPaneles.setearBuffers(unionPaneles,15,15);
 
                     objetoPanelDoble.agregarHijo(objetoPrimerPanel);
@@ -514,14 +508,12 @@
                 capsulaMayor = new CapsulaMayor();
                 objetoCapsulaMayor = new Objeto3D;
                 objetoCapsulaMayor.setearTextura(texturas[4], 4);
-                //objetoCapsulaMayor.setearTextura(texturas[0], 0);
                 objetoCapsulaMayor.setearBuffers(capsulaMayor, 25, 25);
                 objetoCapsula.agregarHijo(objetoCapsulaMayor);
 
                 capsulaMenor = new CapsulaMenor();
                 objetoCapsulaMenor = new Objeto3D;
                 objetoCapsulaMenor.setearTextura(texturas[4], 4);
-                //objetoCapsulaMenor.setearTextura(texturas[0], 0);
                 objetoCapsulaMenor.setEscala(0.5,0.5,0.5);
                 objetoCapsulaMenor.setPosicion(0.35,0,0);
                 objetoCapsulaMenor.setearBuffers(capsulaMenor, 25, 25);
@@ -553,7 +545,6 @@
                 tierra = new Esfera(200);
                 objetoTierra = new Objeto3D;
                 objetoTierra.setearTextura(texturas[5], 5);
-                //objetoTierra.setearTextura(texturas[0], 0);
                 objetoTierra.setearBuffers(tierra, 75, 75);
                 objetoTierra.setPosicion(0,-220,0);
                 objetoTierra.setRotacion(-1,0,-1,anguloRotacionTierra);

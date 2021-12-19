@@ -44,6 +44,7 @@ function loadTexture(gl, url, callback) {
          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
       }
+      gl.bindTexture(gl.TEXTURE_2D, null);
       callback();
     };
   
@@ -208,18 +209,17 @@ class Objeto3D {
             gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
             gl.vertexAttribPointer(vertexNormalAttribute, 3, gl.FLOAT, false, 0, 0);
 
+            var uSampler = gl.getUniformLocation(glProgram, 'uSampler');
+            var vertexTextureAttribute = gl.getAttribLocation(glProgram, "aTextureCoord");
+            gl.enableVertexAttribArray(vertexTextureAttribute);
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
+            gl.vertexAttribPointer(vertexTextureAttribute, 2, gl.FLOAT, false, 0, 0);
+
             if (this.texture) {
-                var uSampler = gl.getUniformLocation(glProgram, 'uSampler');
-                var vertexTextureAttribute = gl.getAttribLocation(glProgram, "aTextureCoord");
-                gl.enableVertexAttribArray(vertexTextureAttribute);
-                gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
-                gl.vertexAttribPointer(vertexTextureAttribute, 2, gl.FLOAT, false, 0, 0);
-
                 gl.activeTexture(gl.TEXTURE0+this.indiceTextura);
-
                 gl.bindTexture(gl.TEXTURE_2D, this.texture);
-                gl.uniform1i(uSampler, this.indiceTextura);
             }
+            gl.uniform1i(uSampler, this.indiceTextura);
             
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
             gl.drawElements(gl.TRIANGLE_STRIP, this.indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
