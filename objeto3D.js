@@ -104,6 +104,31 @@ function generarSuperficie(superficie,filas,columnas){
     return {positionBuffer, normalBuffer, uvBuffer, indexBuffer};
 }
 
+class Metal {
+    constructor() {
+        this.constanteAmbiental = 1.0;
+        this.constanteDifusa = 1.0;
+        this.constanteEspecular = 1.0;
+        this.brillo = 5.0;
+    }
+
+    getAmbiental() {
+        return this.constanteAmbiental;
+    }
+
+    getDifusa() {
+        return this.constanteDifusa;
+    }
+
+    getEspecular() {
+        return this.constanteEspecular;
+    }
+
+    getBrillo() {
+        return this.brillo;
+    }
+}
+
 class Objeto3D {
     constructor() {
         this.positionBuffer = null;
@@ -121,6 +146,7 @@ class Objeto3D {
         this.matrizActualizada = false;
         this.texture = null;
         this.indiceTextura = 0;
+        this.material = new Metal;
         this.brillo = 5.0;
     }
 
@@ -178,8 +204,14 @@ class Objeto3D {
         var viewWorldPositionLocation = gl.getUniformLocation(glProgram, "viewPosition");
         gl.uniform3fv(viewWorldPositionLocation, posicionCamara);
 
+        var ambientConstantLocation = gl.getUniformLocation(glProgram, "ambientConstant");
+        gl.uniform1f(ambientConstantLocation, this.material.getAmbiental());
+        var diffuseConstantLocation = gl.getUniformLocation(glProgram, "diffuseConstant");
+        gl.uniform1f(diffuseConstantLocation, this.material.getDifusa());
+        var specularConstantLocation = gl.getUniformLocation(glProgram, "specularConstant");
+        gl.uniform1f(specularConstantLocation, this.material.getEspecular());
         var shininessLocation = gl.getUniformLocation(glProgram, "shininess");
-        gl.uniform1f(shininessLocation, this.brillo);
+        gl.uniform1f(shininessLocation, this.material.getBrillo());
 
         gl.uniformMatrix4fv(modelMatrixUniform, false, this.matrizModelado);
         gl.uniformMatrix4fv(normalMatrixUniform, false, this.matrizNormal);

@@ -368,6 +368,8 @@ function CapsulaMayor() {
     }
 
     this.getNormal=function(alfa,beta,filasTotales,columnasTotales){
+        if (beta == 0) return [-1,0,0];
+        else if (beta == 1) return [1,0,0];
         var p=this.getPosicion(alfa,beta,filasTotales,columnasTotales);
         var v=vec3.create();
         vec3.normalize(v,p);
