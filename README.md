@@ -1,4 +1,4 @@
-# Sistemas-Graficos-tp1
+# Sistemas-Graficos-tp
 ## Trabajo Completo
 ### Está hecho:
 * Creacion de malla de triángulos
@@ -11,5 +11,10 @@
 * Personalización de la escena (dat GUI)
 * Camara de la capsula
 * Camaras orbitales
+* Texturas
+* Luces direccionales
+* Luces puntuales
+* Luces Spot
+* Mapa de reflexion
 
 
