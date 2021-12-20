@@ -121,6 +121,7 @@ class Objeto3D {
         this.matrizActualizada = false;
         this.texture = null;
         this.indiceTextura = 0;
+        this.brillo = 5.0;
     }
 
     setearTextura(texture, indice) {
@@ -164,6 +165,12 @@ class Objeto3D {
 
         var redLightWorldPositionLocation = gl.getUniformLocation(glProgram, "redLightPosition");
         gl.uniform3fv(redLightWorldPositionLocation, posicionLuzRoja);
+
+        var viewWorldPositionLocation = gl.getUniformLocation(glProgram, "viewPosition");
+        gl.uniform3fv(viewWorldPositionLocation, posicionCamara);
+
+        var shininessLocation = gl.getUniformLocation(glProgram, "shininess");
+        gl.uniform1f(shininessLocation, this.brillo);
 
         gl.uniformMatrix4fv(modelMatrixUniform, false, this.matrizModelado);
         gl.uniformMatrix4fv(normalMatrixUniform, false, this.matrizNormal);
