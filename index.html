@@ -653,9 +653,12 @@
                 if (modoCamara == "capsula") {
                     var matrizModeladoCamaraCapsula = objetoCamaraCapsula.getMatrizModelado(matrizModeladoCapsula);
                     var posCamaraCapsula3 = [matrizModeladoCamaraCapsula[12], matrizModeladoCamaraCapsula[13], matrizModeladoCamaraCapsula[14]];
-                    //var vectorUp = upVector;
-                    vec3.rotateX(upVector, upVector, posCamaraCapsula3, camara1.getxRotVel());
-                    vec3.rotateZ(upVector, upVector, posCamaraCapsula3, camara1.getzRotVel());
+                    if (Math.abs(camara1.getxRotVel())>0) {
+                        vec3.rotateX(upVector, upVector, posCamaraCapsula3, camara1.getxRotVel());
+                    }
+                    if (Math.abs(camara1.getzRotVel())>0) {
+                        vec3.rotateZ(upVector, upVector, posCamaraCapsula3, camara1.getzRotVel());
+                    }
                     mat4.lookAt(viewMatrix, posCamaraCapsula3, posCapsula3, upVector);
                 } else if (modoCamara == "orbital_1") {
                     if (isMouseDown) rotarCamaraOrbital();
