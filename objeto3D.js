@@ -166,6 +166,15 @@ class Objeto3D {
         var redLightWorldPositionLocation = gl.getUniformLocation(glProgram, "redLightPosition");
         gl.uniform3fv(redLightWorldPositionLocation, posicionLuzRoja);
 
+        var spotLightWorldPositionLocation = gl.getUniformLocation(glProgram, "spotLightPosition");
+        gl.uniform3fv(spotLightWorldPositionLocation, posicionLuzSpot);
+        var spotLightDirectionLocation = gl.getUniformLocation(glProgram, "spotLightDirection");
+        gl.uniform3fv(spotLightDirectionLocation, direccionLuzSpot);
+        var limitLocation = gl.getUniformLocation(glProgram, "u_innerLimit");
+        gl.uniform1f(limitLocation, Math.cos(limiteInternoLuzSpot));
+        var limitLocation = gl.getUniformLocation(glProgram, "u_outerLimit");
+        gl.uniform1f(limitLocation, Math.cos(limiteExternoLuzSpot));
+
         var viewWorldPositionLocation = gl.getUniformLocation(glProgram, "viewPosition");
         gl.uniform3fv(viewWorldPositionLocation, posicionCamara);
 
