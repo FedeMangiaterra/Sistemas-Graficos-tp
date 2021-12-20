@@ -116,9 +116,9 @@ function Anillo(radio) {
         
         var n=vec3.create();
         vec3.cross(n,v1,v2);
-        if (!(alfa > 0.25 && alfa < 0.75)) {
+        /*if (!(alfa > 0.25 && alfa < 0.75)) {
             vec3.scale(n,n,-1);
-        }
+        }*/
         return n;
     }
 
@@ -147,7 +147,7 @@ function Modulo(radio,anguloBarrido) {
 
     this.getNormal=function(alfa,beta,filasTotales,columnasTotales){
         
-        verticeForma = alfa * columnasTotales;
+        /*verticeForma = alfa * columnasTotales;
         var recorrido = [[-radio,0,0],[-radio,1.33*radio,0],[radio,1.33*radio,0],[radio,0,0],[radio,0,0],[radio,-1.33*radio,0],[-radio,-1.33*radio,0],[-radio,0,0]];
         var fraccionRecorrida = anguloBarrido / (2*Math.PI)
         nivel = beta * fraccionRecorrida;
@@ -163,10 +163,10 @@ function Modulo(radio,anguloBarrido) {
         normal[1] = n[1] / 2;
         normal[2] = (n[2] + 1) / 2;
         vec3.normalize(normal,normal);
-        //vec3.scale(normal,normal,-1);
-        return normal;
+        vec3.scale(normal,normal,-1);
+        return normal;*/
 
-        /*var p=this.getPosicion(alfa,beta,filasTotales,columnasTotales);
+        var p=this.getPosicion(alfa,beta,filasTotales,columnasTotales);
         var v=vec3.create();
         vec3.normalize(v,p);
 
@@ -183,13 +183,15 @@ function Modulo(radio,anguloBarrido) {
         
         var n=vec3.create();
         vec3.cross(n,v1,v2);
-        if (alfa >= 0.5 && alfa < 0.75) {
+       /* if (alfa >= 0.5 && alfa < 0.75) {
             vec3.scale(n,n,-1);
-        }
-        return n;*/
+        }*/
+        return n;
     }
 
     this.getCoordenadasTextura=function(u,v){
+        var fraccionRecorrida = anguloBarrido / (Math.PI/2);
+        v = v * fraccionRecorrida + 0.375*(1-fraccionRecorrida);
         return [u,v];
     }
 }
@@ -283,7 +285,7 @@ function ModuloNucleo_1() {
         
         var n=vec3.create();
         vec3.cross(n,v1,v2);
-        vec3.scale(n,n,-1);
+        //vec3.scale(n,n,-1);
         return n;
     }
 
@@ -331,7 +333,7 @@ function ModuloNucleo_2() {
         
         var n=vec3.create();
         vec3.cross(n,v1,v2);
-        vec3.scale(n,n,-1);
+        //vec3.scale(n,n,-1);
         return n;
     }
 
@@ -424,7 +426,7 @@ function CapsulaMenor() {
         
         var n=vec3.create();
         vec3.cross(n,v1,v2);
-        vec3.scale(n,n,-1);
+        //vec3.scale(n,n,-1);
         return n;
     }
 
@@ -433,7 +435,7 @@ function CapsulaMenor() {
     }
 }
 
-function Plano(ancho,largo){
+function Plano(ancho,largo, invertirNormal = false){
 
     this.getPosicion=function(u,v,filasTotales,columnasTotales){
 
@@ -443,6 +445,7 @@ function Plano(ancho,largo){
     }
 
     this.getNormal=function(u,v){
+        if (invertirNormal) return [0,-1,0];
         return [0,1,0];
     }
 

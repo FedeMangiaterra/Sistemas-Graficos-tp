@@ -64,6 +64,8 @@
             varying vec3 vNormal;
             varying vec3 vPosWorld;
 
+            uniform vec3 u_reverseLightDirection;
+
             varying highp vec2 vTextureCoord;
 
             uniform sampler2D uSampler;
@@ -71,6 +73,9 @@
             uniform vec3 colorDifuso;
 
             void main(void) {
+                vec3 normal = normalize(vNormal);
+ 
+                float light = dot(normal, u_reverseLightDirection);
 
                 vec3 lightVec=normalize(vec3(0.0,3.0,5.0)-vPosWorld);
                 vec3 diffColor=mix(vec3(0.7,0.7,0.7),vNormal,0.4);
@@ -78,6 +83,7 @@
 
                //gl_FragColor = vec4(color,1.0);
                gl_FragColor = texture2D(uSampler, vTextureCoord);
+               gl_FragColor.rgb *= light;
             }
         </script>
         
@@ -469,17 +475,31 @@
                     objetoPrimerPanel.setearTextura(texturas[3], 3);
                     objetoPrimerPanel.setPosicion(0.5,0,0);
                     objetoPrimerPanel.setRotacion(1,0,0,anguloPaneles);
-                    objetoPrimerPanel.setColor([0,0,0.10]);
+
+                    objetoPrimerPanelDorso = new Objeto3D;
+                    objetoPrimerPanelDorso.setearTextura(texturas[3], 3, true);
+                    objetoPrimerPanelDorso.setPosicion(0,-0.001,0);
+                    objetoPrimerPanelDorso.setRotacion(1,0,0,Math.PI);
+                    objetoPrimerPanel.agregarHijo(objetoPrimerPanelDorso);
+
                     objetoSegundoPanel = new Objeto3D;
                     objetoSegundoPanel.setearTextura(texturas[3], 3);
                     objetoSegundoPanel.setPosicion(-0.5,0,0);
                     objetoSegundoPanel.setRotacion(1,0,0,anguloPaneles);
-                    objetoSegundoPanel.setColor([0,0,0.10]);
+
+                    objetoSegundoPanelDorso = new Objeto3D;
+                    objetoSegundoPanelDorso.setearTextura(texturas[3], 3, true);
+                    objetoSegundoPanelDorso.setPosicion(0,-0.001,0);
+                    objetoSegundoPanelDorso.setRotacion(1,0,0,Math.PI);
+                    objetoSegundoPanel.agregarHijo(objetoSegundoPanelDorso);
+
                     objetoUnionPaneles = new Objeto3D;
                     objetoUnionPaneles.setearTextura(texturas[0], 0);
                     objetoUnionPaneles.setRotacion(0,0,1,Math.PI/2);
                     objetoPrimerPanel.setearBuffers(panel,5,5);
+                    objetoPrimerPanelDorso.setearBuffers(panel,5,5);
                     objetoSegundoPanel.setearBuffers(panel,5,5);
+                    objetoSegundoPanelDorso.setearBuffers(panel,5,5);
                     objetoUnionPaneles.setearBuffers(unionPaneles,15,15);
 
                     objetoPanelDoble.agregarHijo(objetoPrimerPanel);
@@ -564,8 +584,8 @@
                 objetoSol = new Objeto3D;
                 objetoSol.setearTextura(texturas[7], 7);
                 objetoSol.setearBuffers(sol, 20, 20);
-                objetoSol.setPosicion(-15,20,-60);
-                objetoSol.setRotacion(1,0,0,Math.PI/2);
+                objetoSol.setPosicion(15,50,25);
+                objetoSol.setRotacion(1,0,0,Math.PI/3);
                 objetoEscena.agregarHijo(objetoSol);
                 
                 

@@ -139,10 +139,7 @@ class Objeto3D {
         if (this.escala != [1,1,1]) {
             mat4.scale(this.matrizModelado, this.matrizModelado, this.escala);
         }
-        //mat4.identity(this.matrizNormal);
-        mat4.multiply(this.matrizNormal,mat4.create(),this.matrizModelado);
-        mat4.invert(this.matrizNormal,this.matrizNormal);
-        mat4.transpose(this.matrizNormal,this.matrizNormal);
+        
         this.matrizActualizada = true;
     }
 
@@ -153,8 +150,15 @@ class Objeto3D {
         var colorDifusoUniform = gl.getUniformLocation(glProgram, "colorDifuso");
         gl.uniform3f(colorDifusoUniform, this.colorObjeto[0], this.colorObjeto[1], this.colorObjeto[2]);
 
+        var direccion_luz_solar = [-75,20,-60];
+        direccion_luz_solar = [3,10,5];
+        vec3.normalize(direccion_luz_solar, direccion_luz_solar);
+
+        var reverseLightDirectionLocation = gl.getUniformLocation(glProgram, "u_reverseLightDirection");
+        gl.uniform3fv(reverseLightDirectionLocation, direccion_luz_solar);
+
         gl.uniformMatrix4fv(modelMatrixUniform, false, this.matrizModelado);
-        gl.uniformMatrix4fv(normalMatrixUniform, false, normalMatrix);
+        gl.uniformMatrix4fv(normalMatrixUniform, false, this.matrizNormal);
     }       
 
     setearBuffers(superficie, filas, columnas) {
@@ -195,6 +199,9 @@ class Objeto3D {
         this.actualizarMatrizModelado();
         mat4.multiply(m, matrizPadre, this.matrizModelado);
         this.matrizModelado = m;
+        mat4.multiply(this.matrizNormal,mat4.create(),this.matrizModelado);
+        mat4.invert(this.matrizNormal,this.matrizNormal);
+        mat4.transpose(this.matrizNormal,this.matrizNormal);
 
         if (this.indexBuffer && this.positionBuffer) {
             this.setupVertexShaderMatrix();
