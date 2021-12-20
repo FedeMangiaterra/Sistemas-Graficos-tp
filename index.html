@@ -70,20 +70,18 @@
 
             uniform sampler2D uSampler;
 
-            uniform vec3 colorDifuso;
-
             void main(void) {
+                vec3 ambientLightIntensity = vec3(0.1,0.1,0.2);
+                vec3 sunlightIntensity = vec3(0.9,0.8,0.6);
                 vec3 normal = normalize(vNormal);
  
-                float light = dot(normal, u_reverseLightDirection);
+                float sunlight = max(dot(normal, u_reverseLightDirection),0.0);
 
-                vec3 lightVec=normalize(vec3(0.0,3.0,5.0)-vPosWorld);
-                vec3 diffColor=mix(vec3(0.7,0.7,0.7),vNormal,0.4);
-                vec3 color=dot(lightVec,vNormal)*colorDifuso;
+                vec3 lightIntensity = ambientLightIntensity + (sunlightIntensity * sunlight);
 
                //gl_FragColor = vec4(color,1.0);
                gl_FragColor = texture2D(uSampler, vTextureCoord);
-               gl_FragColor.rgb *= light;
+               gl_FragColor.rgb *= lightIntensity;
             }
         </script>
         
