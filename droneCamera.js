@@ -178,6 +178,14 @@
             
         }
 
+        this.getxRotVel=function(){
+            return camState.xRotVel;
+        }
+
+        this.getyRotVel=function(){
+            return camState.yRotVel;
+        }
+
         this.getzRotVel=function(){
             return camState.zRotVel;
         }

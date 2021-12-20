@@ -170,13 +170,17 @@ class Objeto3D {
         this.colorObjeto = [1,1,1];
         this.matrizActualizada = false;
         this.texture = null;
+        this.mapaReflexion = null;
         this.indiceTextura = 0;
+        this.indiceMapaReflexion = 0;
         this.material = new Metal;
     }
 
-    setearTextura(texture, indice) {
+    setearTextura(texture, indice, mapaReflexion, indiceMapaReflexion) {
         this.texture = texture;
         this.indiceTextura = indice;
+        this.mapaReflexion = mapaReflexion;
+        this.indiceMapaReflexion = indiceMapaReflexion;
     }
 
     actualizarMatrizModelado() {
@@ -302,11 +306,22 @@ class Objeto3D {
             gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
             gl.vertexAttribPointer(vertexTextureAttribute, 2, gl.FLOAT, false, 0, 0);
 
+            var reflectionSampler = gl.getUniformLocation(glProgram, 'reflectionSampler');
+            var reflectionTextureAttribute = gl.getAttribLocation(glProgram, "aTextureCoord");
+            gl.enableVertexAttribArray(reflectionTextureAttribute);
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
+            gl.vertexAttribPointer(reflectionTextureAttribute, 2, gl.FLOAT, false, 0, 0);
+
             if (this.texture) {
                 gl.activeTexture(gl.TEXTURE0+this.indiceTextura);
                 gl.bindTexture(gl.TEXTURE_2D, this.texture);
             }
+            if (this.mapaReflexion) {
+                gl.activeTexture(gl.TEXTURE0+this.indiceMapaReflexion);
+                gl.bindTexture(gl.TEXTURE_2D, this.mapaReflexion);
+            }
             gl.uniform1i(uSampler, this.indiceTextura);
+            gl.uniform1i(reflectionSampler, this.indiceMapaReflexion);
             
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
             gl.drawElements(gl.TRIANGLE_STRIP, this.indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
