@@ -129,6 +129,31 @@ class Metal {
     }
 }
 
+class Piedra {
+    constructor() {
+        this.constanteAmbiental = 2.0;
+        this.constanteDifusa = 1.0;
+        this.constanteEspecular = 0.2;
+        this.brillo = 5.0;
+    }
+
+    getAmbiental() {
+        return this.constanteAmbiental;
+    }
+
+    getDifusa() {
+        return this.constanteDifusa;
+    }
+
+    getEspecular() {
+        return this.constanteEspecular;
+    }
+
+    getBrillo() {
+        return this.brillo;
+    }
+}
+
 class Objeto3D {
     constructor() {
         this.positionBuffer = null;
@@ -147,7 +172,6 @@ class Objeto3D {
         this.texture = null;
         this.indiceTextura = 0;
         this.material = new Metal;
-        this.brillo = 5.0;
     }
 
     setearTextura(texture, indice) {
@@ -319,6 +343,10 @@ class Objeto3D {
 
     setColor(color) {
         this.colorObjeto = color;
+    }
+
+    setMaterial(material) {
+        this.material = material;
     }
 
     getMatrizModelado(matrizPadre) {
