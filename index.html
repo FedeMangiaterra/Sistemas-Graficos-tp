@@ -38,6 +38,9 @@
             attribute vec3 aVertexNormal;
             attribute vec2 aTextureCoord;
 
+            uniform vec3 greenLightPosition;
+            uniform vec3 redLightPosition;
+
             uniform mat4 modelMatrix;            
             uniform mat4 viewMatrix;
             uniform mat4 projMatrix;
@@ -47,15 +50,20 @@
             uniform mat4 normalMatrix;
 
             varying vec3 vNormal;    
-            varying vec3 vPosWorld;  
+            varying vec3 vPosWorld;
+            
+            varying vec3 v_surfaceToLightGreen;
+            varying vec3 v_surfaceToLightRed;
 
             void main(void) {
                 gl_Position = projMatrix * viewMatrix * modelMatrix * vec4(aVertexPosition, 1.0);
                 vTextureCoord = aTextureCoord;
 
                 vPosWorld=(modelMatrix*vec4(aVertexPosition,1.0)).xyz;    //la posicion en coordenadas de mundo
-                vNormal=(normalMatrix*vec4(aVertexNormal,1.0)).xyz;       //la normal en coordenadas de mundo                
+                vNormal=(normalMatrix*vec4(aVertexNormal,1.0)).xyz;       //la normal en coordenadas de mundo 
                 
+                v_surfaceToLightGreen = greenLightPosition - vPosWorld;
+                v_surfaceToLightRed = redLightPosition - vPosWorld;     
             }
         </script>
 
@@ -64,22 +72,40 @@
             varying vec3 vNormal;
             varying vec3 vPosWorld;
 
+            varying vec3 v_surfaceToLightGreen;
+            varying vec3 v_surfaceToLightRed;
+
             uniform vec3 u_reverseLightDirection;
+            uniform vec3 ambientLightIntensity;
+            uniform vec3 sunlightIntensity;
 
             varying highp vec2 vTextureCoord;
 
             uniform sampler2D uSampler;
 
             void main(void) {
-                vec3 ambientLightIntensity = vec3(0.1,0.1,0.2);
-                vec3 sunlightIntensity = vec3(0.9,0.8,0.6);
+                //vec3 ambientLightIntensity = vec3(0.1,0.1,0.2);
+                //vec3 sunlightIntensity = vec3(1.0,0.9,0.8);
                 vec3 normal = normalize(vNormal);
+                vec3 surfaceToLightGreenDirection = normalize(v_surfaceToLightGreen);
+                vec3 surfaceToLightRedDirection = normalize(v_surfaceToLightRed);
  
                 float sunlight = max(dot(normal, u_reverseLightDirection),0.0);
 
+                float greenlight = dot(normal, surfaceToLightGreenDirection);
+
+                vec3 greenlightIntensity = vec3(0.0,1.0,0.0);
+
+                float redlight = dot(normal, surfaceToLightRedDirection);
+
+                vec3 redlightIntensity = vec3(1.0,0.0,0.0);
+
                 vec3 lightIntensity = ambientLightIntensity + (sunlightIntensity * sunlight);
 
-               //gl_FragColor = vec4(color,1.0);
+                vec3 greenIntensity = greenlightIntensity * greenlight;
+
+                vec3 redIntensity = redlightIntensity * redlight;
+
                gl_FragColor = texture2D(uSampler, vTextureCoord);
                gl_FragColor.rgb *= lightIntensity;
             }
@@ -124,6 +150,9 @@
             var modoCamara = "default";
 
             var camara1 = new DroneCameraControl([-3,0,-5]);
+
+            var posicionLuzVerde = [-3,0,-5];
+            var posicionLuzRoja = [-3,0,-5];
 
             var previousClientX = 0;
             var previousClientY = 0;
@@ -525,6 +554,14 @@
                 //objetoCamaraCapsula.setearBuffers(camaraCapsula,10,10);
                 objetoCapsula.agregarHijo(objetoCamaraCapsula);
 
+                objetoLuzVerde = new Objeto3D;
+                objetoLuzVerde.setPosicion(-0.2,0,0.13);
+                objetoCapsula.agregarHijo(objetoLuzVerde);
+
+                objetoLuzRoja = new Objeto3D;
+                objetoLuzRoja.setPosicion(-0.2,0,-0.13);
+                objetoCapsula.agregarHijo(objetoLuzRoja);
+
                 capsulaMayor = new CapsulaMayor();
                 objetoCapsulaMayor = new Objeto3D;
                 objetoCapsulaMayor.setearTextura(texturas[4], 4);
@@ -540,10 +577,19 @@
                 objetoCapsulaMenor.setColor([1,0,0.52]);
                 objetoCapsula.agregarHijo(objetoCapsulaMenor);
 
+                var matrizModeladoCapsula = objetoCapsula.getMatrizModelado(mat4.create());
+                var posCapsula3 = [matrizModeladoCapsula[12], matrizModeladoCapsula[13], matrizModeladoCapsula[14]];
+
+                var matrizModeladoLuzVerde = objetoLuzVerde.getMatrizModelado(matrizModeladoCapsula);
+                var posLuzVerde3 = [matrizModeladoLuzVerde[12], matrizModeladoLuzVerde[13], matrizModeladoLuzVerde[14]];         
+                posicionLuzVerde = posLuzVerde3;
+
+                var matrizModeladoLuzRoja = objetoLuzRoja.getMatrizModelado(matrizModeladoCapsula);
+                var posLuzRoja3 = [matrizModeladoLuzRoja[12], matrizModeladoLuzRoja[13], matrizModeladoLuzRoja[14]];
+                posicionLuzRoja = posLuzRoja3;
+
                 if (modoCamara == "capsula") {
-                    var matrizModeladoCapsula = objetoCapsula.getMatrizModelado(mat4.create());
                     var matrizModeladoCamaraCapsula = objetoCamaraCapsula.getMatrizModelado(matrizModeladoCapsula);
-                    var posCapsula3 = [matrizModeladoCapsula[12], matrizModeladoCapsula[13], matrizModeladoCapsula[14]];
                     var posCamaraCapsula3 = [matrizModeladoCamaraCapsula[12], matrizModeladoCamaraCapsula[13], matrizModeladoCamaraCapsula[14]];
                     var vectorUp = upVector;
                     vec3.rotateZ(vectorUp, upVector, posCamaraCapsula3, camara1.getzRotVel());

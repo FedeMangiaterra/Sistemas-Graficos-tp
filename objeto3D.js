@@ -147,15 +147,23 @@ class Objeto3D {
         var modelMatrixUniform = gl.getUniformLocation(glProgram, "modelMatrix");
         var normalMatrixUniform = gl.getUniformLocation(glProgram, "normalMatrix");
 
-        var colorDifusoUniform = gl.getUniformLocation(glProgram, "colorDifuso");
-        gl.uniform3f(colorDifusoUniform, this.colorObjeto[0], this.colorObjeto[1], this.colorObjeto[2]);
 
-        var direccion_luz_solar = [-75,20,-60];
-        direccion_luz_solar = [3,10,5];
+        var direccion_luz_solar = [3,10,5];
         vec3.normalize(direccion_luz_solar, direccion_luz_solar);
 
         var reverseLightDirectionLocation = gl.getUniformLocation(glProgram, "u_reverseLightDirection");
         gl.uniform3fv(reverseLightDirectionLocation, direccion_luz_solar);
+
+        var ambientLightIntensityLocation = gl.getUniformLocation(glProgram, "ambientLightIntensity");
+        var sunlightIntensityLocation = gl.getUniformLocation(glProgram, "sunlightIntensity");
+        gl.uniform3fv(ambientLightIntensityLocation, [0.1, 0.1, 0.2]);
+        gl.uniform3fv(sunlightIntensityLocation, [1.0,0.9,0.8]);
+
+        var greenLightWorldPositionLocation = gl.getUniformLocation(glProgram, "greenLightPosition");
+        gl.uniform3fv(greenLightWorldPositionLocation, posicionLuzVerde);
+
+        var redLightWorldPositionLocation = gl.getUniformLocation(glProgram, "redLightPosition");
+        gl.uniform3fv(redLightWorldPositionLocation, posicionLuzRoja);
 
         gl.uniformMatrix4fv(modelMatrixUniform, false, this.matrizModelado);
         gl.uniformMatrix4fv(normalMatrixUniform, false, this.matrizNormal);
