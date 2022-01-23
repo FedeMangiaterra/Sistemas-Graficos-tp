@@ -154,6 +154,31 @@ class Piedra {
     }
 }
 
+class Sol {
+    constructor() {
+        this.constanteAmbiental = 0.0;
+        this.constanteDifusa = 1.0;
+        this.constanteEspecular = 1.0;
+        this.brillo = 500.0;
+    }
+
+    getAmbiental() {
+        return this.constanteAmbiental;
+    }
+
+    getDifusa() {
+        return this.constanteDifusa;
+    }
+
+    getEspecular() {
+        return this.constanteEspecular;
+    }
+
+    getBrillo() {
+        return this.brillo;
+    }
+}
+
 class Objeto3D {
     constructor() {
         this.positionBuffer = null;
@@ -211,7 +236,7 @@ class Objeto3D {
 
         var ambientLightIntensityLocation = gl.getUniformLocation(glProgram, "ambientLightIntensity");
         var sunlightIntensityLocation = gl.getUniformLocation(glProgram, "sunlightIntensity");
-        gl.uniform3fv(ambientLightIntensityLocation, [0.1, 0.1, 0.2]);
+        gl.uniform3fv(ambientLightIntensityLocation, [0.15, 0.15, 0.25]);
         gl.uniform3fv(sunlightIntensityLocation, [1.0,0.9,0.8]);
 
         var greenLightWorldPositionLocation = gl.getUniformLocation(glProgram, "greenLightPosition");
