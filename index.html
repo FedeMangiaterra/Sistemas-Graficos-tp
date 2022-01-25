@@ -115,8 +115,8 @@
                 vec3 sunReflection = 2.0 * sunlight * normal - u_reverseLightDirection;
                 float specularSun = 0.0;
                 if (sunlight > 0.0) {
-                    //specularSun = specularConstant * pow(dot(sunReflection, surfaceToViewDirection), shininess);
                     specularSun = specularConstant * pow(dot(normal, normalize(surfaceToViewDirection)), shininess) / 2.0;
+                    if (specularSun < 0.0) specularSun = 0.0; 
                 }
 
                 float greenlight = dot(normal, surfaceToLightGreenDirection);
@@ -128,6 +128,9 @@
                 vec3 greenReflection = 2.0 * greenlight * normal - surfaceToLightGreenDirection; 
                 if (greenlight > 0.0) {
                     specularGreen = pow(dot(normal, halfVectorGreen), shininess) / (greenDistance*12.0);
+                    if (specularGreen < 0.0) {
+                        specularGreen = 0.0;
+                    } 
                 } 
 
                 float redlight = dot(normal, surfaceToLightRedDirection);
@@ -138,6 +141,9 @@
                 vec3 halfVectorRed = normalize(surfaceToLightRedDirection + surfaceToViewDirection);
                 if (redlight > 0.0) {
                     specularRed = pow(dot(normal, halfVectorRed), shininess) / (redDistance*12.0);
+                    if (specularRed < 0.0) {
+                        specularRed = 0.0;
+                    } 
                 }
                 
                 float dotFromDirection = dot(surfaceToLightSpotDirection, -spotLightDirection);
@@ -152,12 +158,14 @@
                 float specularSpot = 0.0; 
                 if (spotlight > 0.0) {
                     specularSpot = specularConstant * inLight * pow(dot(normal, halfVectorSpot), shininess) / (spotDistance * 3.0);
+                    if (specularSpot < 0.0) specularSpot = 0.0; 
                 }
 
-                vec3 viewReflection = -2.0 * dot(-surfaceToViewDirection, normal) * normal + surfaceToViewDirection;
+                //vec3 viewReflection = -2.0 * dot(-surfaceToViewDirection, normal) * normal + surfaceToViewDirection;
+                vec3 viewReflection = 2.0 * dot(normalize(surfaceToViewDirection), normalize(normal)) * normalize(normal) - normalize(surfaceToViewDirection);
                 float radio = sqrt(viewReflection.x * viewReflection.x + viewReflection.y * viewReflection.y + viewReflection.z * viewReflection.z);
-                vec2 reflectionTextureCoord = vec2(atan(viewReflection.y/viewReflection.x), acos(viewReflection.z/radio)/5.0+0.20);
-                //vec2 reflectionTextureCoord = vec2(acos(viewReflection.z/radio), atan(viewReflection.y/viewReflection.x));
+                vec2 reflectionTextureCoord = vec2(atan(viewReflection.y/viewReflection.x), acos(viewReflection.z/radio)/3.14+0.2);
+                //vec2 reflectionTextureCoord = vec2(acos(viewReflection.z/radio), atan(viewReflection.y/viewReflection.x)/5.0+0.20);
 
                 vec4 color0 = texture2D(uSampler, vTextureCoord);
                 vec4 color1 = texture2D(reflectionSampler, reflectionTextureCoord);
