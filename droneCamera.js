@@ -190,6 +190,9 @@
             return camState.zRotVel;
         }
 
+        this.getRotationMatrix=function() {
+            return rotationMatrix;
+        }
 
         this.getViewMatrix=function(){
 
