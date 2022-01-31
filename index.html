@@ -163,7 +163,8 @@
 
                 vec3 viewReflection = 2.0 * dot(normalize(surfaceToViewDirection), normalize(normal)) * normalize(normal) - normalize(surfaceToViewDirection);
                 float radio = sqrt(viewReflection.x * viewReflection.x + viewReflection.y * viewReflection.y + viewReflection.z * viewReflection.z);
-                vec2 reflectionTextureCoord = vec2(atan(viewReflection.y/viewReflection.x), acos(viewReflection.z/radio)/3.14+0.2);
+                vec2 reflectionTextureCoord = vec2(atan(viewReflection.z/viewReflection.x), acos(viewReflection.y/radio)/3.14);
+                //vec2 reflectionTextureCoord = vec2(acos(viewReflection.z/radio)/8.0, atan(viewReflection.y/viewReflection.x)/16.0);
 
                 vec4 color0 = texture2D(uSampler, vTextureCoord);
                 vec4 color1 = texture2D(reflectionSampler, reflectionTextureCoord);
@@ -173,7 +174,7 @@
                     gl_FragColor.rgb *= vec3(1.0, 1.0, 1.0);
                 } else {
                     gl_FragColor.rgb *= (ambientLightIntensity + sunIntensity + greenIntensity + redIntensity + spotIntensity);
-                    gl_FragColor.rgb += specularSun + specularGreen + specularRed + specularSpot;
+                    gl_FragColor.rgb += specularSun + specularRed + specularGreen + specularSpot;
                 }
             }
         </script>
@@ -484,7 +485,7 @@
 
                 for (i = 0; i < cantidadModulos; i++) {
                     objetoModulo = new Objeto3D;
-                    objetoModulo.setearTextura(texturas[0], 0, texturas[8], 8);
+                    objetoModulo.setearTextura(texturas[0], 0, texturas[9], 9);
                     objetoConector = new Objeto3D;
                     var fase = 2*i*barridoModulo;
                     objetoModulo.setRotacion(0,0,1,fase);
@@ -692,6 +693,12 @@
                 }
                 
                 objetoEscena.agregarHijo(objetoCapsula);
+
+                /*bola = new Esfera(7.5);
+                objetoBola = new Objeto3D;
+                objetoBola.setearTextura(texturas[4], 4, texturas[8], 8);
+                objetoBola.setearBuffers(bola, 25, 25);
+                objetoEscena.agregarHijo(objetoBola);*/
 
                 tierra = new Esfera(200);
                 objetoTierra = new Objeto3D;
